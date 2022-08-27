@@ -11,3 +11,5 @@ first line
     *.tfvars и*.tfvars.json
  - override.tf, override.tf.json,*_override.tf,*_override.tf.json
  - конфиг-файлы .terraformrc, terraform.rc
+
+----- added new line---------
