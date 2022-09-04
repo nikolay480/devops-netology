@@ -89,3 +89,56 @@ vagrant@vagrant:~$
 в данном примере команда получает вывод из stdin, перенаправленный через pipe от stdout команды echo
 и так как команда запущена от sudo , соотвественно имеет права на запись в файл
 
+Домашнее задание к занятию "3.3. Операционные системы, лекция 1"
+1. chdir("/tmp")                           = 0
+2. /usr/share/misc/magic.mgc
+   openat(AT_FDCWD, "/usr/share/misc/magic.mgc", O_RDONLY) = 4
+3.
+4. Зомби-процессы не занимают какие-либо системные ресурсы, но сохраняют свой ID процесса в таблице.
+5. 
+PID    COMM               FD ERR PATH
+643    irqbalance          6   0 /proc/interrupts
+643    irqbalance          6   0 /proc/stat
+643    irqbalance          6   0 /proc/irq/20/smp_affinity
+643    irqbalance          6   0 /proc/irq/0/smp_affinity
+643    irqbalance          6   0 /proc/irq/1/smp_affinity
+643    irqbalance          6   0 /proc/irq/8/smp_affinity
+643    irqbalance          6   0 /proc/irq/12/smp_affinity
+643    irqbalance          6   0 /proc/irq/14/smp_affinity
+643    irqbalance          6   0 /proc/irq/15/smp_affinity
+
+6.
+uname({sysname="Linux", nodename="vagrant", ...}) = 0
+uname({sysname="Linux", nodename="vagrant", ...}) = 0
+uname({sysname="Linux", nodename="vagrant", ...}) = 0
+
+"Part of the utsname information is also accessible  via  /proc/sys/ker‐
+       nel/{ostype, hostname, osrelease, version, domainname}."
+
+7.
+; - выполелнение команд последовательно
+&& - команда после && выполняется только если команда до && завершилась успешно (статус выхода 0)
+set -e - прерывает сессию при любом ненулевом значении исполняемых команд в конвейере кроме последней.
+использование &&  вместе с set -e- вероятно не имеет смысла, так как при ошибке  выполнение команд завершится.
+
+8. 
+-e  Exit immediately if a command exits with a non-zero status.
+-u  Treat unset variables as an error when substituting.
+-x  Print commands and their arguments as they are executed.
+-o pipefail     the return value of a pipeline is the status of the last command to exit with a non-zero status, or zero if no command exited with a non-zero status.
+Данный режим обеспечит прекращение выполнения скрипта в случае ошибок и выведет информацию, (лог ошибок).
+
+9. vagrant@vagrant:~$ ps -o stat
+Ss - ожидание завершения события ( s - лидер сессии)
+R+ - работающий или в очереди на выполнение( + находится в группе приоритетных процессов)
+
+доп символы:
+               <    high-priority (not nice to other users)
+               N    low-priority (nice to other users)
+               L    has pages locked into memory (for real-time and
+                    custom IO)
+               s    is a session leader
+               l    is multi-threaded (using CLONE_THREAD, like NPTL
+                    pthreads do)
+               +    is in the foreground process group
+
