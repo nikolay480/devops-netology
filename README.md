@@ -94,6 +94,15 @@ vagrant@vagrant:~$
 2. /usr/share/misc/magic.mgc
    openat(AT_FDCWD, "/usr/share/misc/magic.mgc", O_RDONLY) = 4
 3.
+vagrant@vagrant:/proc$ sudo lsof | grep deleted
+bash      7829                        vagrant    5w      REG              253,0    10703    1323183 /home/vagrant/output.file (deleted)
+ping      8920                        vagrant    1w      REG              253,0    10703    1323183 /home/vagrant/output.file (deleted)
+ping      8920                        vagrant    5w      REG              253,0    10703    1323183 /home/vagrant/output.file (deleted)
+
+далее записываем пустую строку в 5
+echo ""| tee /proc/1580/fd/5
+
+
 4. Зомби-процессы не занимают какие-либо системные ресурсы, но сохраняют свой ID процесса в таблице.
 5. 
 PID    COMM               FD ERR PATH
