@@ -55,7 +55,12 @@ USER         PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
 root           1  0.0  1.1 167404 11532 ?        Ss   Sep02   0:06 /sbin/init
 4.	ls -la /dir1 2>/dev/pts/1
 
-5.	root@vagrant:/home#  cat ./script1.sh > out_file1.txt
+5.	
+vagrant@vagrant:~/test$ cat 1.txt
+This is test message.
+vagrant@vagrant:~/test$ cat < 1.txt > output.txt
+vagrant@vagrant:~/test$ cat output.txt
+This is test message.
 
 6.	да
 echo "Hello World!" > /dev/tty
