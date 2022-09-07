@@ -28,6 +28,18 @@ HISTFILESIZE - максимальное число строк в файле ис
 
 11.  Квадратные скобки указывают на то, что будет проведено испытание. Опция  -d (directory) проверяет наличие каталога с именем ./tmp. 
 Возвращает статус 0 или 1 в зависимости от вычисления выражения условного выражения.
+root@vagrant:/home# cat script1.sh
+#!/bin/bash
+if [[ -d /tmp ]]
+then
+    echo "каталог есть"
+else
+    echo "каталога нет"
+fi
+root@vagrant:/home# ./script1.sh
+каталог есть
+
+
 12.
 mkdir /tmp/new_path_directory/
 cp /bin/bash /tmp/new_path_directory/
