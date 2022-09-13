@@ -156,3 +156,176 @@ R+ - работающий или в очереди на выполнение( + 
                     pthreads do)
                +    is in the foreground process group
 
+
+Домашнее задание к занятию "3.4. Операционные системы, лекция 2"
+
+1. 
+Cоздан unit-файл для Node Exporter 
+root@vagrant:/etc/systemd/system# cat node_exporter.service
+[Unit]
+Description=Node Exporter
+Wants=network.target
+After=network.target
+
+[Service]
+User=node_exporter
+Group=node_exporter
+Type=simple
+ExecStart=/usr/local/bin/node_exporter $OPTIONS
+EnvironmentFile=/etc/default/node_exporter
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+________----------_________
+
+Node Exporter добавлен в автозагрузку:
+root@vagrant:/etc/systemd/system$ sudo systemctl enable node_exporter
+Created symlink /etc/systemd/system/multi-user.target.wants/node_exporter.service → /etc/systemd/system/node_exporter.service.
+________----------_________
+
+Процесс корректно останавливается и запускается, после перезагрузки процесс запускается:
+root@vagrant:/etc/systemd/system# systemctl status node_exporter.service
+● node_exporter.service - Node Exporter
+     Loaded: loaded (/etc/systemd/system/node_exporter.service; enabled;>
+     Active: active (running) since Tue 2022-09-13 13:27:07 UTC; 28s ago
+   Main PID: 3182 (node_exporter)
+      Tasks: 5 (limit: 1066)
+     Memory: 2.5M
+     CGroup: /system.slice/node_exporter.service
+             └─3182 /usr/local/bin/node_exporter
+
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.784Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.784Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.784Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.784Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.784Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.784Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.784Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.784Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.785Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.786Z>
+root@vagrant:/etc/systemd/system# ps -e | grep node_exporter
+   3182 ?        00:00:00 node_exporter
+   
+root@vagrant:/etc/systemd/system# systemctl stop node_exporter.service
+root@vagrant:/etc/systemd/system# systemctl status node_exporter.service
+● node_exporter.service - Node Exporter
+     Loaded: loaded (/etc/systemd/system/node_exporter.service; enabled;>
+     Active: inactive (dead) since Tue 2022-09-13 13:30:08 UTC; 9s ago
+    Process: 3182 ExecStart=/usr/local/bin/node_exporter $OPTIONS (code=>
+   Main PID: 3182 (code=killed, signal=TERM)
+
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.784Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.784Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.784Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.784Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.784Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.785Z>
+Sep 13 13:27:07 vagrant node_exporter[3182]: ts=2022-09-13T13:27:07.786Z>
+Sep 13 13:30:08 vagrant systemd[1]: Stopping Node Exporter...
+Sep 13 13:30:08 vagrant systemd[1]: node_exporter.service: Succeeded.
+Sep 13 13:30:08 vagrant systemd[1]: Stopped Node Exporter.
+root@vagrant:/etc/systemd/system# ps -e | grep node_exporter   
+
+root@vagrant:/etc/systemd/system# systemctl restart node_exporter.service
+
+root@vagrant:/etc/systemd/system# ps -e | grep node_exporter
+   3262 ?        00:00:00 node_exporter
+
+root@vagrant:/etc/systemd/system# systemctl stop node_exporter.service
+root@vagrant:/etc/systemd/system# ps -e | grep node_exporter
+root@vagrant:/etc/systemd/system# systemctl start node_exporter.service
+root@vagrant:/etc/systemd/system# ps -e | grep node_exporter
+   3342 ?        00:00:00 node_exporter
+   
+------------_________---------
+после перезапуска машины также процес запускается
+vagrant@vagrant:/etc/systemd/system$ exit
+logout
+Connection to 127.0.0.1 closed.
+PS F:\vagrant> vagrant reload
+PS F:\vagrant> vagrant ssh
+Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 5.4.0-110-generic x86_64)
+
+ * Documentation:  https://help.ubuntu.com
+ * Management:     https://landscape.canonical.com
+ * Support:        https://ubuntu.com/advantage
+
+  System information as of Tue 13 Sep 2022 01:58:56 PM UTC
+
+  System load:  1.72               Processes:             132
+  Usage of /:   13.5% of 30.63GB   Users logged in:       0
+  Memory usage: 24%                IPv4 address for eth0: 10.0.2.15
+  Swap usage:   0%
+
+
+This system is built by the Bento project by Chef Software
+More information can be found at https://github.com/chef/bento
+Last login: Tue Sep 13 12:39:16 2022 from 10.0.2.2
+vagrant@vagrant:~$ ps -e | grep node_exporter
+    651 ?        00:00:00 node_exporter
+
+ 2. 
+CPU:
+    node_cpu_seconds_total{cpu="0",mode="idle"} 2238.49
+    node_cpu_seconds_total{cpu="0",mode="system"} 16.72
+    node_cpu_seconds_total{cpu="0",mode="user"} 6.86
+    process_cpu_seconds_total
+    
+Memory:
+    node_memory_MemAvailable_bytes 
+    node_memory_MemFree_bytes
+    
+Disk:
+    node_disk_io_time_seconds_total{device="sda"} 
+    node_disk_read_bytes_total{device="sda"} 
+    node_disk_read_time_seconds_total{device="sda"} 
+    node_disk_write_time_seconds_total{device="sda"}
+    
+Network:
+    node_network_receive_errs_total{device="eth0"} 
+    node_network_receive_bytes_total{device="eth0"} 
+    node_network_transmit_bytes_total{device="eth0"}
+    node_network_transmit_errs_total{device="eth0"}
+
+3.  Netdata установлена на виртуальной машине и открывается с хоста
+http://localhost:19999/#menu_system_submenu_cpu;theme=slate;help=true
+С метрикаим ознакомлен, удобно визуализированы различное множество метрик в виде онлайн-грфиков загрузки.
+
+4. Да, данная информация содержится в dmesg
+vagrant@vagrant:~$ dmesg -T
+[Tue Sep 13 13:57:35 2022] Hypervisor detected: KVM
+[Tue Sep 13 13:57:35 2022] CPU MTRRs all blank - virtualized system.
+[Tue Sep 13 13:57:35 2022] Booting paravirtualized kernel on KVM
+[Tue Sep 13 13:57:39 2022] systemd[1]: Detected virtualization oracle.
+
+5. 
+vagrant@vagrant:~$ sysctl fs.nr_open
+fs.nr_open = 1048576
+
+fs.nr_open устанавливает системное ограничение на максимальное число открываемых файлов (аллоцируемых файловых дескрипторов).
+команды ulimit -Sn и ulimit -Hn отображают soft (данный параметр можно увеличить системным вызовом setrlimit до пределов установленных в переменной hard) и hard значение вышеназванного ограничения устанавливаемого на сессионном уровне.
+
+vagrant@vagrant:~$ ulimit -Hn
+1048576
+vagrant@vagrant:~$ ulimit -Sn
+1024
+
+6. root@vagrant:/# ps -e |grep sleep
+   1867 pts/0    00:00:00 sleep
+   
+   НЕПОНЯТНО КАК ДАЛЬШЕ ДЕЙСТВОВАТЬ, ПОДСКАЖИТЕ!
+   
+   
+   
+7. Работу прервал Process Number Controller
+   [ 9923.678400] cgroup: fork rejected by pids controller in /user.slice/user-1000.slice/session-6.scope
+   
+   Максимальное количество процессов для пользователя можно изменить командой ulimit -u <число> или в файле cat etc/security/limits.conf
+Изменить максимальное количество PID можно посредством команд sysctl -w kernel.pid_max=<число>,echo <число> > /proc/sys/kernel/pid_max или задать переменную kernel.pid_max в файле  /etc/sysctl.conf
+Ограничение на максимальное число процессов на уровне системы установлено в переменной DefaultTasksMax: systemctl show --property DefaultTasksMax изменить данную переменную можно в файле /etc/systemd/system.conf
+Переменная UserTasksMax в файле /etc/systemd/logind.conf позволяет установить ограничение по максимальному количеству процессов на уровне пользователей
+   
+   
