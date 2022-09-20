@@ -44,7 +44,7 @@ Date:   Wed May 3 16:25:41 2017 -0700
 
 
 ### ### ### 
-Домашнее задание к занятию "3.2. Работа в терминале, лекция 2"
+# Домашнее задание к занятию "3.2. Работа в терминале, лекция 2"
 1.	cd – внутренняя команда
 vagrant@vagrant:~$ type cd
 cd is a shell builtin
@@ -295,23 +295,24 @@ http://localhost:19999/#menu_system_submenu_cpu;theme=slate;help=true
 С метрикаим ознакомлен, удобно визуализированы различное множество метрик в виде онлайн-грфиков загрузки.
 
 4. Да, данная информация содержится в dmesg
-vagrant@vagrant:~$ dmesg -T
+
+`vagrant@vagrant:~$ dmesg -T   
 [Tue Sep 13 13:57:35 2022] Hypervisor detected: KVM
 [Tue Sep 13 13:57:35 2022] CPU MTRRs all blank - virtualized system.
 [Tue Sep 13 13:57:35 2022] Booting paravirtualized kernel on KVM
-[Tue Sep 13 13:57:39 2022] systemd[1]: Detected virtualization oracle.
+[Tue Sep 13 13:57:39 2022] systemd[1]: Detected virtualization oracle.`
 
 5. 
-vagrant@vagrant:~$ sysctl fs.nr_open
-fs.nr_open = 1048576
+`vagrant@vagrant:~$ sysctl fs.nr_open
+fs.nr_open = 1048576`
 
 fs.nr_open устанавливает системное ограничение на максимальное число открываемых файлов (аллоцируемых файловых дескрипторов).
 команды ulimit -Sn и ulimit -Hn отображают soft (данный параметр можно увеличить системным вызовом setrlimit до пределов установленных в переменной hard) и hard значение вышеназванного ограничения устанавливаемого на сессионном уровне.
 
-vagrant@vagrant:~$ ulimit -Hn
+`vagrant@vagrant:~$ ulimit -Hn
 1048576
 vagrant@vagrant:~$ ulimit -Sn
-1024
+1024`
 
 6. root@vagrant:/# ps -e |grep sleep
    1867 pts/0    00:00:00 sleep
@@ -325,12 +326,13 @@ vagrant@vagrant:~$ ulimit -Sn
   
    
 7. Работу прервал Process Number Controller
-   [ 9923.678400] cgroup: fork rejected by pids controller in /user.slice/user-1000.slice/session-6.scope
-   
+
+`[ 9923.678400] cgroup: fork rejected by pids controller in /user.slice/user-1000.slice/session-6.scope`
+
    Максимальное количество процессов для пользователя можно изменить командой
-   ulimit -u <число> или в файле cat etc/security/limits.conf
-Изменить максимальное количество PID можно посредством команд sysctl -w kernel.pid_max=<число>, echo <число> > /proc/sys/kernel/pid_max или задать переменную kernel.pid_max в файле  /etc/sysctl.conf
-Ограничение на максимальное число процессов на уровне системы установлено в переменной DefaultTasksMax: systemctl show --property DefaultTasksMax изменить данную переменную можно в файле /etc/systemd/system.conf
-Переменная UserTasksMax в файле /etc/systemd/logind.conf позволяет установить ограничение по максимальному количеству процессов на уровне пользователей
+   `ulimit -u <число>` или в файле `etc/security/limits.conf`
+Изменить максимальное количество PID можно посредством команд `sysctl -w kernel.pid_max=<число>, echo <число> > /proc/sys/kernel/pid_max` или задать переменную kernel.pid_max в файле  `/etc/sysctl.conf`
+Ограничение на максимальное число процессов на уровне системы установлено в переменной DefaultTasksMax: systemctl show --property DefaultTasksMax изменить данную переменную можно в файле `/etc/systemd/system.conf`
+Переменная UserTasksMax в файле `/etc/systemd/logind.conf` позволяет установить ограничение по максимальному количеству процессов на уровне пользователей
    
    
