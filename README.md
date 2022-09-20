@@ -785,13 +785,13 @@ Connection closed by foreign host.
 ресурса указывается в поле Location получаемого в ответ заголовка пакета протокола HTTP
 
 2.
-![](images\f12.png)
 
-![](images\timing.png)
+![](images/f12.png)
+![](images/timing.png)
 
 3.
 
-![](images/timing.png)
+![](images/ip.png)
 
 4. Провайдер - Ростелеком, автономная система - AS12389
 
