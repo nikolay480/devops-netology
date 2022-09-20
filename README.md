@@ -785,10 +785,9 @@ Connection closed by foreign host.
 ресурса указывается в поле Location получаемого в ответ заголовка пакета протокола HTTP
 
 2.
+![](images\f12.png)
 
-![](C:\Users\Note\PycharmProjects\devops-netology\images\f12.png)
-
-![](C:\Users\Note\PycharmProjects\devops-netology\images\timing.png)
+![](images\timing.png)
 
 3.
 
