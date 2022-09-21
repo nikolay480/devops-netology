@@ -173,7 +173,7 @@ pthreads do)
 
 + is in the foreground process group
 
-### Домашнее задание к занятию "3.4. Операционные системы, лекция 2"
+## Домашнее задание к занятию "3.4. Операционные системы, лекция 2"
 
 1.
 
@@ -267,9 +267,12 @@ root@vagrant:/etc/systemd/system# ps -e | grep node_exporter
 root@vagrant:/etc/systemd/system# systemctl start node_exporter.service
 root@vagrant:/etc/systemd/system# ps -e | grep node_exporter
 3342 ? 00:00:00 node_exporter
+```
 
-------------_________---------
-после перезапуска машины также процес запускается
+---------------------
+После перезапуска машины также процес запускается
+
+```
 vagrant@vagrant:/etc/systemd/system$ exit
 logout
 Connection to 127.0.0.1 closed.
@@ -297,6 +300,7 @@ vagrant@vagrant:~$ ps -e | grep node_exporter
 
 2.
 
+```
 CPU:
 node_cpu_seconds_total{cpu="0",mode="idle"} 2238.49
 node_cpu_seconds_total{cpu="0",mode="system"} 16.72
@@ -318,10 +322,13 @@ node_network_receive_errs_total{device="eth0"}
 node_network_receive_bytes_total{device="eth0"}
 node_network_transmit_bytes_total{device="eth0"}
 node_network_transmit_errs_total{device="eth0"}
+```
 
-3. Netdata установлена на виртуальной машине и открывается с хоста
-   http://localhost:19999/#menu_system_submenu_cpu;theme=slate;help=true
-   С метрикаим ознакомлен, удобно визуализированы различное множество метрик в виде онлайн-грфиков загрузки.
+3.
+
+Netdata установлена на виртуальной машине и открывается с хоста
+`http://localhost:19999/#menu_system_submenu_cpu;theme=slate;help=true`
+С метрикаим ознакомлен, удобно визуализированы различное множество метрик в виде онлайн-графиков загрузки.
 
 4. Да, данная информация содержится в dmesg
 
@@ -340,10 +347,11 @@ vagrant@vagrant:~$ sysctl fs.nr_open
 fs.nr_open = 1048576
 ```
 
-fs.nr_open устанавливает системное ограничение на максимальное число открываемых файлов (аллоцируемых файловых
+`fs.nr_open` устанавливает системное ограничение на максимальное число открываемых файлов (аллоцируемых файловых
 дескрипторов).
-команды ulimit -Sn и ulimit -Hn отображают soft (данный параметр можно увеличить системным вызовом setrlimit до пределов
-установленных в переменной hard) и hard значение вышеназванного ограничения устанавливаемого на сессионном уровне.
+команды `ulimit -Sn` и `ulimit -Hn` отображают **soft** (данный параметр можно увеличить системным вызовом setrlimit до
+пределов
+установленных в переменной hard) и **hard** значение вышеназванного ограничения устанавливаемого на сессионном уровне.
 
 ```
 vagrant@vagrant:~$ ulimit -Hn
@@ -355,14 +363,14 @@ vagrant@vagrant:~$ ulimit -Sn
 6.
 
 ```
-root@vagrant:/# ps -e |grep sleep
-   1867 pts/0 00:00:00 sleep
-   ```
-
-НЕПОНЯТНО КАК ДАЛЬШЕ ДЕЙСТВОВАТЬ, ПОДСКАЖИТЕ!
-
-открываю втрое окно терминала, запускаю команду но результата нет
-nsenter --target 1867 --pid --mount
+root@vagrant:~# ps -e |grep sleep
+   2020 pts/2    00:00:00 sleep
+root@vagrant:~# nsenter --target 2020 --pid --mount
+root@vagrant:/# ps
+    PID TTY          TIME CMD
+      2 pts/0    00:00:00 bash
+     11 pts/0    00:00:00 ps
+```
 
 7. Работу прервал Process Number Controller
 
@@ -372,9 +380,9 @@ nsenter --target 1867 --pid --mount
 `ulimit -u <число>` или в файле `etc/security/limits.conf`
 Изменить максимальное количество PID можно посредством
 команд `sysctl -w kernel.pid_max=<число>, echo <число> > /proc/sys/kernel/pid_max` или задать переменную kernel.pid_max
-в файле  `/etc/sysctl.conf`
-Ограничение на максимальное число процессов на уровне системы установлено в переменной DefaultTasksMax: systemctl show
---property DefaultTasksMax изменить данную переменную можно в файле `/etc/systemd/system.conf`
+в файле  `/etc/sysctl.conf`.
+Ограничение на максимальное число процессов на уровне системы установлено в переменной DefaultTasksMax: `systemctl show
+--property DefaultTasksMax` изменить данную переменную можно в файле `/etc/systemd/system.conf`
 Переменная UserTasksMax в файле `/etc/systemd/logind.conf` позволяет установить ограничение по максимальному количеству
 процессов на уровне пользователей
 
@@ -1209,8 +1217,8 @@ Hosts:     192
 ```
 
 6. К частным "серым" адресам относятся IP-адреса в том числе:
-100.64.0.0 до 100.127.255.255 с маской подсети 255.192.0.0 или /10; 
-данная подсеть рекомендована согласно rfc6598 для использования в качестве адресов для CGN (Carrier-Grade NAT)
+   100.64.0.0 до 100.127.255.255 с маской подсети 255.192.0.0 или /10;
+   данная подсеть рекомендована согласно rfc6598 для использования в качестве адресов для CGN (Carrier-Grade NAT)
 
 ```
 root@vagrant:~# ipcalc 100.64.0.0/10 -s 50
@@ -1252,21 +1260,27 @@ Unused:
 100.80.0.0/12
 100.96.0.0/11
 ```
+
 пример - 100.64.0.1
 
-7. 
+7.
+
 **Linux**
 
 Посмотреть таблицы:
+
 ```
 root@vagrant:~# ip neigh
 10.0.2.2 dev eth0 lladdr 52:54:00:12:35:02 DELAY
 10.0.2.3 dev eth0 lladdr 52:54:00:12:35:03 REACHABLE
 ```
+
 Удалить один адрес:
+
 ```
 ip neigh del {IP} dev {DEVICE}
 ```
+
 очистка ARP таблицы:
 
 ```
@@ -1275,14 +1289,19 @@ ip neigh flush all
 
 **Windows**
 Просмотр:
+
 ```
 arp -a
 ```
+
 Удаление одного адреса:
+
 ```
 arp -d 10.0.2.2
 ```
+
 Очистка arp-кэша
+
 ```
 netsh interface ip delete arpcache
 ```
