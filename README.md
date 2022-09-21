@@ -179,7 +179,7 @@ pthreads do)
 
 Cоздан unit-файл для Node Exporter
 
-```
+```sh
 root@vagrant:/etc/systemd/system# cat node_exporter.service
 [Unit]
 Description=Node Exporter
@@ -203,7 +203,7 @@ ______
 
 Node Exporter добавлен в автозагрузку:
 
-```
+```sh
 root@vagrant:/etc/systemd/system$ sudo systemctl enable node_exporter
 Created symlink /etc/systemd/system/multi-user.target.wants/node_exporter.service →
 /etc/systemd/system/node_exporter.service.
@@ -213,7 +213,7 @@ _________________
 
 Процесс корректно останавливается и запускается, после перезагрузки процесс запускается:
 
-```
+```sh
 root@vagrant:/etc/systemd/system# systemctl status node_exporter.service
 ● node_exporter.service - Node Exporter
 Loaded: loaded (/etc/systemd/system/node_exporter.service; enabled;>
@@ -272,7 +272,7 @@ root@vagrant:/etc/systemd/system# ps -e | grep node_exporter
 ---------------------
 После перезапуска машины также процес запускается
 
-```
+```sh
 vagrant@vagrant:/etc/systemd/system$ exit
 logout
 Connection to 127.0.0.1 closed.
@@ -332,7 +332,7 @@ Netdata установлена на виртуальной машине и от�
 
 4. Да, данная информация содержится в dmesg
 
-```
+```sh
 vagrant@vagrant:~$ dmesg -T   
 [Tue Sep 13 13:57:35 2022] Hypervisor detected: KVM
 [Tue Sep 13 13:57:35 2022] CPU MTRRs all blank - virtualized system.
@@ -342,7 +342,7 @@ vagrant@vagrant:~$ dmesg -T
 
 5.
 
-```
+```sh
 vagrant@vagrant:~$ sysctl fs.nr_open
 fs.nr_open = 1048576
 ```
@@ -353,7 +353,7 @@ fs.nr_open = 1048576
 пределов
 установленных в переменной hard) и **hard** значение вышеназванного ограничения устанавливаемого на сессионном уровне.
 
-```
+```sh
 vagrant@vagrant:~$ ulimit -Hn
 1048576
 vagrant@vagrant:~$ ulimit -Sn
@@ -362,9 +362,9 @@ vagrant@vagrant:~$ ulimit -Sn
 
 6.
 
-```
+```sh
 root@vagrant:~# ps -e |grep sleep
-   2020 pts/2    00:00:00 sleep
+2020 pts/2    00:00:00 sleep
 root@vagrant:~# nsenter --target 2020 --pid --mount
 root@vagrant:/# ps
     PID TTY          TIME CMD
@@ -412,9 +412,9 @@ _Дыра_ (англ. hole) — последовательность нулев�
    Различаются только имена файлов. Фактически жесткая ссылка это еще одно имя для файла.
 3. Выполнено. Создана новая виртуальная машина с двумя дополнительными неразмеченными дисками по 2.5 Гб.
 
-````
+````sh
 vagrant@vagrant:~$ lsblk
-`NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
 loop0                       7:0    0 67.2M  1 loop /snap/lxd/21835
 loop1                       7:1    0 61.9M  1 loop /snap/core20/1328
 loop2                       7:2    0 43.6M  1 loop /snap/snapd/14978
@@ -429,7 +429,8 @@ sdc                         8:32   0  2.5G  0 disk`
 
 4.
 
-```vagrant@vagrant:~$ sudo -i
+```sh
+vagrant@vagrant:~$ sudo -i
 root@vagrant:~# fdisk /dev/sdb
 
 Welcome to fdisk (util-linux 2.34).
@@ -487,7 +488,7 @@ sdc                         8:32   0  2.5G  0 disk
 
 5.
 
-```
+```bash
 root@vagrant:~# sfdisk -d /dev/sdb | sfdisk -f /dev/sdc
 Checking that no-one is using this disk right now ... OK
 
@@ -521,7 +522,7 @@ Syncing disks.
 
 ----
 
-```
+```bash
 root@vagrant:~# lsblk
 NAME                      MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
 loop0                       7:0    0 67.2M  1 loop /snap/lxd/21835
@@ -545,7 +546,7 @@ sdc                         8:32   0  2.5G  0 disk
 
 6.
 
-```
+```bash
 root@vagrant:~# mdadm --create --verbose /dev/md0 --level=1 --raid-devices=2 /dev/sd{b1,c1}
 mdadm: Note: this array has metadata at the start and
     may not be suitable as a boot device.  If you plan to
@@ -560,14 +561,14 @@ mdadm: array /dev/md0 started.
 
 7.
 
-```
+```bash
 root@vagrant:~# mdadm --create --verbose /dev/md1 --level=0 --raid-devices=2 /dev/sd{b2,c2}
 mdadm: chunk size defaults to 512K
 mdadm: Defaulting to version 1.2 metadata
 mdadm: array /dev/md1 started.
 ```
 
-```
+```bash
 root@vagrant:~# cat /proc/mdstat
 Personalities : [linear] [multipath] [raid0] [raid1] [raid6] [raid5] [raid4] [raid10]
 md1 : active raid0 sdc2[1] sdb2[0]
@@ -581,7 +582,7 @@ unused devices: <none>
 
 8.
 
-```
+```bash
 root@vagrant:~# pvcreate /dev/md0
   Physical volume "/dev/md0" successfully created.
 root@vagrant:~# pvcreate /dev/md1
@@ -590,21 +591,21 @@ root@vagrant:~# pvcreate /dev/md1
 
 9.
 
-```
+```bash
 root@vagrant:~# vgcreate VG0 /dev/md0 /dev/md1
   Volume group "VG0" successfully created
 ```
 
 10.
 
-```
+```bash
 root@vagrant:~# lvcreate -L 100M VG0 /dev/md1
   Logical volume "lvol0" created.
 ```
 
 11.
 
-```
+```bash
 root@vagrant:~# mkfs.ext4 /dev/VG0/lvol0
 mke2fs 1.45.5 (07-Jan-2020)
 Creating filesystem with 25600 4k blocks and 25600 inodes
@@ -617,19 +618,19 @@ Writing superblocks and filesystem accounting information: done
 
 12.
 
-```
+```bash
 root@vagrant:~# mkdir /tmp/new
 root@vagrant:~# mount /dev/VG0/lvol0 /tmp/new
 ```
 
-```
+```bash
 root@vagrant:~# cat /proc/mounts | grep /tmp/new
 /dev/mapper/VG0-lvol0 /tmp/new ext4 rw,relatime,stripe=256 0 0
 ```
 
 13.
 
-```
+```bash
 root@vagrant:~# wget https://mirror.yandex.ru/ubuntu/ls-lR.gz -O /tmp/new/test.gz
 --2022-09-20 13:41:25--  https://mirror.yandex.ru/ubuntu/ls-lR.gz
 Resolving mirror.yandex.ru (mirror.yandex.ru)... 213.180.204.183, 2a02:6b8::183
@@ -648,7 +649,7 @@ lost+found  test.gz
 
 14.
 
-```
+```bash
 root@vagrant:~# lsblk
 NAME                      MAJ:MIN RM  SIZE RO TYPE  MOUNTPOINT
 loop0                       7:0    0 67.2M  1 loop  /snap/lxd/21835
@@ -678,7 +679,7 @@ sdc                         8:32   0  2.5G  0 disk
 
 15.
 
-```
+```bash
 root@vagrant:~# gzip -t /tmp/new/test.gz
 root@vagrant:~# echo $?
 0
@@ -686,7 +687,7 @@ root@vagrant:~# echo $?
 
 16.
 
-```
+```bash
 root@vagrant:~# pvmove /dev/md1 /dev/md0
   /dev/md1: Moved: 12.00%
   /dev/md1: Moved: 100.00%
@@ -719,7 +720,7 @@ sdc                         8:32   0  2.5G  0 disk
 
 17.
 
-```
+```bash
 root@vagrant:~# mdadm --fail /dev/md0 /dev/sdb1
 mdadm: set /dev/sdb1 faulty in /dev/md0
 root@vagrant:~# cat /proc/mdstat
@@ -735,7 +736,7 @@ unused devices: <none>
 
 18.
 
-```
+```bash
 root@vagrant:~# dmesg -T | grep md0
 [Tue Sep 20 12:16:35 2022] md/raid1:md0: not clean -- starting background reconstruction
 [Tue Sep 20 12:16:35 2022] md/raid1:md0: active with 2 out of 2 mirrors
@@ -748,7 +749,7 @@ root@vagrant:~# dmesg -T | grep md0
 
 19.
 
-```
+```bash
 root@vagrant:~# gzip -t /tmp/new/test.gz
 root@vagrant:~# echo $?
 0
@@ -760,7 +761,7 @@ root@vagrant:~# echo $?
 
 1.
 
-```
+```bash
 vagrant@vagrant:~$ telnet stackoverflow.com 80
 Trying 151.101.129.69...
 Connected to stackoverflow.com.
@@ -803,7 +804,7 @@ Connection closed by foreign host.
 
 4. Провайдер - Ростелеком, автономная система - AS12389
 
-```
+```bash
 root@vagrant:~# whois -h whois.ripe.net 5.140.31.66
 % This is the RIPE Database query service.
 % The objects are in RPSL format.
@@ -862,7 +863,7 @@ source:         RIPE # Filtered
 
 5.
 
-```
+```bash
 traceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 60 byte packets
  1  10.0.2.2 [*]  0.913 ms  0.860 ms  0.825 ms
  2  192.168.1.1 [*]  5.550 ms  6.918 ms  6.879 ms
@@ -889,7 +890,7 @@ traceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 60 byte packets
 
 6. Наибольшая задержка между 10 и 11 хостами.
 
-```
+```bash
                                            My traceroute  [v0.93]
 vagrant (10.0.2.15)                                                                  2022-09-20T18:53:51+0000
 Keys:  Help   Display mode   Restart statistics   Order of fields   quit
@@ -917,7 +918,7 @@ Keys:  Help   Display mode   Restart statistics   Order of fields   quit
 
 7.
 
-```
+```bash
 vagrant@vagrant:~$ dig +trace @8.8.8.8 dns.google | grep dns.google
 ; <<>> DiG 9.16.1-Ubuntu <<>> +trace @8.8.8.8 dns.google
 dns.google.             10800   IN      NS      ns4.zdns.google.
@@ -934,7 +935,7 @@ dns.google.             900     IN      RRSIG   A 8 2 900 20221009005703 2022091
 
 8. Привязано доменное имя dns.google.
 
-```
+```bash
 vagrant@vagrant:~$ dig -x 8.8.4.4 +noall +answer
 4.4.8.8.in-addr.arpa.   70486   IN      PTR     dns.google.
 vagrant@vagrant:~$ dig -x 8.8.8.8 +noall +answer
@@ -947,13 +948,13 @@ vagrant@vagrant:~$ dig -x 8.8.8.8 +noall +answer
 
 Linux
 
-```
+```bash
 root@vagrant:~# ip -c -br link
 lo               UNKNOWN        00:00:00:00:00:00 <LOOPBACK,UP,LOWER_UP>
 eth0             UP             08:00:27:a2:6b:fd <BROADCAST,MULTICAST,UP,LOWER_UP>
 ```
 
-```
+```bash
 root@vagrant:~# netstat -i
 Kernel Interface table
 Iface      MTU    RX-OK RX-ERR RX-DRP RX-OVR    TX-OK TX-ERR TX-DRP TX-OVR Flg
@@ -961,7 +962,7 @@ eth0      1500   201107      0      0 0         86376      0      0      0 BMRU
 lo       65536      490      0      0 0           490      0      0      0 LRU
 ```
 
-```
+```bash
 root@vagrant:~# sudo nmcli device show | grep GENERAL.DEVICE
 GENERAL.DEVICE:                         eth0
 GENERAL.DEVICE:                         lo
@@ -969,7 +970,7 @@ GENERAL.DEVICE:                         lo
 
 Windows
 
-```
+```bash
 PS C:\Users\Note> ipconfig
 
 Настройка протокола IP для Windows
@@ -1021,7 +1022,7 @@ PS C:\Users\Note> ipconfig
    Основной шлюз. . . . . . . . . : 192.168.1.1
 ```
 
-```
+```bash
 PS C:\Users\Note> netsh interface ip show interfaces
 
 Инд     Мет         MTU          Состояние               Имя
@@ -1037,7 +1038,7 @@ PS C:\Users\Note> netsh interface ip show interfaces
   5          25        1500  connected     VirtualBox Host-Only Network
 ```
 
-```
+```bash
 PS C:\Users\Note> Get-NetIPInterface
 
 ifIndex InterfaceAlias                  AddressFamily NlMtu(Bytes) InterfaceMet
@@ -1082,7 +1083,7 @@ ifIndex InterfaceAlias                  AddressFamily NlMtu(Bytes) InterfaceMet
 файл `/etc/network/interfaces`.
 Например:
 
-```
+```bash
 auto eth0.1400
 iface eth0.1400 inet static
         address 192.168.1.1
@@ -1112,7 +1113,7 @@ iface eth0.1400 inet static
 
 Пример конфигурационного файла:
 
-```
+```bash
 auto bond0
 iface bond0 inet static
     bond-slaves wlan0 eth0
@@ -1143,7 +1144,7 @@ iface wlan0 inet manual
 
 Пример вариантов на коммутаторе 3560:
 
-```
+```bash
 sw1(config)# port-channel load-balance ?
 dst-ip Dst IP Addr
 dst-mac Dst Mac Addr
@@ -1157,7 +1158,8 @@ src-mac Src Mac Addr
 
 5. В сети 10.0.0.0/29 - 6 адресов
 
-```root@vagrant:~# ipcalc 10.0.0.0/29
+```bash
+root@vagrant:~# ipcalc 10.0.0.0/29
 Address:   10.0.0.0             00001010.00000000.00000000.00000 000
 Netmask:   255.255.255.248 = 29 11111111.11111111.11111111.11111 000
 Wildcard:  0.0.0.7              00000000.00000000.00000000.00000 111
@@ -1171,7 +1173,7 @@ Hosts/Net: 6                     Class A, Private Internet
 
 Из сети с маской /24 можно получить 32 подсети /29:
 
-```
+```bash
 root@vagrant:~# ipcalc 10.10.10.0/24 29
 Address:   10.10.10.0           00001010.00001010.00001010. 00000000
 Netmask:   255.255.255.0 = 24   11111111.11111111.11111111. 00000000
@@ -1220,7 +1222,7 @@ Hosts:     192
    100.64.0.0 до 100.127.255.255 с маской подсети 255.192.0.0 или /10;
    данная подсеть рекомендована согласно rfc6598 для использования в качестве адресов для CGN (Carrier-Grade NAT)
 
-```
+```bash
 root@vagrant:~# ipcalc 100.64.0.0/10 -s 50
 Address:   100.64.0.0           01100100.01 000000.00000000.00000000
 Netmask:   255.192.0.0 = 10     11111111.11 000000.00000000.00000000
@@ -1269,7 +1271,7 @@ Unused:
 
 Посмотреть таблицы:
 
-```
+```bash
 root@vagrant:~# ip neigh
 10.0.2.2 dev eth0 lladdr 52:54:00:12:35:02 DELAY
 10.0.2.3 dev eth0 lladdr 52:54:00:12:35:03 REACHABLE
@@ -1277,31 +1279,32 @@ root@vagrant:~# ip neigh
 
 Удалить один адрес:
 
-```
+```bash
 ip neigh del {IP} dev {DEVICE}
 ```
 
 очистка ARP таблицы:
 
-```
+```bash
 ip neigh flush all
 ```
 
 **Windows**
+
 Просмотр:
 
-```
+```bash
 arp -a
 ```
 
 Удаление одного адреса:
 
-```
+```bash
 arp -d 10.0.2.2
 ```
 
 Очистка arp-кэша
 
-```
+```bash
 netsh interface ip delete arpcache
 ```
