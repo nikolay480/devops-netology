@@ -1,18 +1,31 @@
 # devops-netology
 
-### «2.4. Инструменты Git»
+## «2.4. Инструменты Git»
 
-1. git show aefea
-   commit aefead2207ef7e2aa5dc81a34aedf0cad4c32545
+1.
 
-2. git show 85024d3
-   tag: v0.12.23
+```
+git show aefea
+commit aefead2207ef7e2aa5dc81a34aedf0cad4c32545
+```
 
-3. git checkout b8d720
-   git log --pretty=format:'%h %s' –graph
-   56cd7859e0, 9ea88f22fc
+2.
 
-4. git log --oneline v0.12.23..v0.12.24
+```
+git show 85024d3
+tag: v0.12.23
+
+3. 
+```
+
+git checkout b8d720
+git log --pretty=format:'%h %s' –graph
+56cd7859e0, 9ea88f22fc
+
+4.
+
+````
+git log --oneline v0.12.23..v0.12.24
 
 b14b74c493 [Website] vmc provider links
 3f235065b9 Update CHANGELOG.md
@@ -23,6 +36,7 @@ d5f9411f51 command: Fix bug when using terraform login on Windows
 4b6d06cc5d Update CHANGELOG.md
 dd01a35078 Update CHANGELOG.md
 225466bc3e Cleanup after v0.12.23 release
+````
 
 5. git log -S "func providerSource"
 
@@ -43,55 +57,75 @@ Date:   Thu Apr 2 18:04:39 2020 -0700
 
 ### ### ### 
 
-# Домашнее задание к занятию "3.2. Работа в терминале, лекция 2"
+## Домашнее задание к занятию "3.2. Работа в терминале, лекция 2"
 
-1. cd – внутренняя команда
-   vagrant@vagrant:~$ type cd
-   cd is a shell builtin
-2. grep <some_string> <some_file> -c
-3. процесс /sbin/init
+1. `cd` – внутренняя команда
+
+   `vagrant@vagrant:~$ type cd`
+
+   `cd is a shell builtin`
+2. `grep <some_string> <some_file> -c`
+3. процесс` /sbin/init`
+
+```bash
    vagrant@vagrant:~$ ps aux
    USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND
    root 1 0.0 1.1 167404 11532 ? Ss Sep02 0:06 /sbin/init
-4. ls -la /dir1 2>/dev/pts/1
+   ```
+
+4. `ls -la /dir1 2>/dev/pts/1`
 
 5.
 
+```
 vagrant@vagrant:~/test$ cat 1.txt
 This is test message.
 vagrant@vagrant:~/test$ cat < 1.txt > output.txt
 vagrant@vagrant:~/test$ cat output.txt
 This is test message.
+```
 
-6. да
-   echo "Hello World!" > /dev/tty
+6. Да.
 
-7. bash 5>&1 - создаем новый дескриптор 5 и перенаправляем его в STDOUT
-   echo netology > /proc/$$/fd/5 - перенаправляем результат команды в дескриптор 5
+   `echo "Hello World!" > /dev/tty`
+
+7. `bash 5>&1` - создаем новый дескриптор 5 и перенаправляем его в STDOUT
+
+   ``echo netology > /proc/$$/fd/5`` - перенаправляем результат команды в дескриптор 5
 8. Получится. Для этого нужно "поменять местами STDOUT и STDERR", создав, например, новый дескриптор 5 и использовать
    его как промежуточный
-   5>&1 1>&2 2>&5 . данное выражение выполнить после команды и перед pipe
+   `5>&1 1>&2 2>&5 `. данное выражение выполнить после команды и перед pipe
 9. показывает переменные окружения для процесса, под которым выполняется текущая оболочка bash ($$). Аналогичный вывод у
-   команды printenv
-10. /proc/[pid]/cmdline - Этот файл содержит полную командную строку запуска процесса, кроме тех процессов, что
+   команды `printenv`
+10. `/proc/[pid]/cmdline `- Этот файл содержит полную командную строку запуска процесса, кроме тех процессов, что
     полностью ушли в своппинг, а также тех, что превратились в зомби. В этих двух случаях в файле ничего нет, то есть
     чтение этого файла вернет 0 символов. Аргументы командной строки в этом файле указаны как список строк, каждая из
     которых завешается нулевым символом, с добавочным нулевым байтом после последней строки.
     /proc/[pid]/cmdline является символьной ссылкой, содержащей фактическое полное имя выполняемого файла. Символьная
     ссылка exe может использоваться обычным образом - при попытке открыть exe будет открыт исполняемый файл
 11. sse4_2
+
+```bash
     vagrant@vagrant:~$ grep sse /proc/cpuinfo
     fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ht syscall nx
     rdtscp lm constant_tsc rep_good nopl xtopology nonstop_tsc cpuid tsc_known_freq pni pclmulqdq ssse3 cx16 sse4_1
     sse4_2 x2apic popcnt aes xsave avx hypervisor lahf_lm pti md_clear flush_l1d
+```
+
 12. По умолчанию при запуске команды через SSH не выделяется TTY. Если же не указывать команды, то TTY будет выдаваться,
-    так как предполагается, что будет запущен сеанс оболочки
-    Для принудительного использования необходимо указать ключ -t
-    vagrant@vagrant:~$ ssh -t localhost tty
-    vagrant@localhost's password:
+    так как предполагается, что будет запущен сеанс оболочки.
+    Для принудительного использования необходимо указать ключ -t.
+
+```bash    
+vagrant@vagrant:~$ ssh -t localhost tty
+vagrant@localhost's password:
     /dev/pts/1
     Connection to localhost closed.
+```
+
 13. reptyr -s 3375
+
+```bash
     vagrant@vagrant:~$ sudo nano /proc/sys/kernel/yama/ptrace_scope
     vagrant@vagrant:~$ reptyr -s 3375
     [-] Timed out waiting for child stop.
@@ -99,29 +133,44 @@ This is test message.
     vagrant@vagrant:~$ screen -S 3375
     [screen is terminating]
     vagrant@vagrant:~$
+```
 
-14. команда tee делает вывод одновременно и в файл, указанный в качестве параметра, и в stdout,
+14. команда `tee` делает вывод одновременно и в файл, указанный в качестве параметра, и в stdout,
     в данном примере команда получает вывод из stdin, перенаправленный через pipe от stdout команды echo
-    и так как команда запущена от sudo , соотвественно имеет права на запись в файл
+    и так как команда запущена от sudo, соответственно имеет права на запись в файл.
 
-Домашнее задание к занятию "3.3. Операционные системы, лекция 1"
+## Домашнее задание к занятию "3.3. Операционные системы, лекция 1"
 
-1. chdir("/tmp")                           = 0
-2. /usr/share/misc/magic.mgc
-   openat(AT_FDCWD, "/usr/share/misc/magic.mgc", O_RDONLY) = 4
+1.
+
+`chdir("/tmp")                          = 0`
+
+2.
+
+```bash
+/usr/share/misc/magic.mgc
+openat(AT_FDCWD, "/usr/share/misc/magic.mgc", O_RDONLY) = 4
+```
+
 3.
 
+```bash
 vagrant@vagrant:/proc$ sudo lsof | grep deleted
 bash 7829 vagrant 5w REG 253,0 10703 1323183 /home/vagrant/output.file (deleted)
 ping 8920 vagrant 1w REG 253,0 10703 1323183 /home/vagrant/output.file (deleted)
 ping 8920 vagrant 5w REG 253,0 10703 1323183 /home/vagrant/output.file (deleted)
+```
 
-далее записываем пустую строку в 5
-echo ""| tee /proc/1580/fd/5
+Далее записываем пустую строку в 5
+`echo ""| tee /proc/1580/fd/5`
 
-4. Зомби-процессы не занимают какие-либо системные ресурсы, но сохраняют свой ID процесса в таблице.
+4.
+
+Зомби-процессы не занимают какие-либо системные ресурсы, но сохраняют свой ID процесса в таблице.
+
 5.
 
+```bash
 PID COMM FD ERR PATH
 643 irqbalance 6 0 /proc/interrupts
 643 irqbalance 6 0 /proc/stat
@@ -132,52 +181,69 @@ PID COMM FD ERR PATH
 643 irqbalance 6 0 /proc/irq/12/smp_affinity
 643 irqbalance 6 0 /proc/irq/14/smp_affinity
 643 irqbalance 6 0 /proc/irq/15/smp_affinity
+```
 
 6.
 
+```
 uname({sysname="Linux", nodename="vagrant", ...}) = 0
 uname({sysname="Linux", nodename="vagrant", ...}) = 0
 uname({sysname="Linux", nodename="vagrant", ...}) = 0
 
 "Part of the utsname information is also accessible via /proc/sys/ker‐
 nel/{ostype, hostname, osrelease, version, domainname}."
+```
 
 7.
 
-; - выполелнение команд последовательно
-&& - команда после && выполняется только если команда до && завершилась успешно (статус выхода 0)
-set -e - прерывает сессию при любом ненулевом значении исполняемых команд в конвейере кроме последней.
-использование && вместе с set -e- вероятно не имеет смысла, так как при ошибке выполнение команд завершится.
+`; `- выполелнение команд последовательно
+
+`&& `- команда после `&&` выполняется, только если команда до `&&` завершилась успешно (статус выхода 0)
+
+`set -e` - прерывает сессию при любом ненулевом значении исполняемых команд в конвейере кроме последней.
+использование `&&` вместе с `set -e`- вероятно не имеет смысла, так как при ошибке выполнение команд завершится.
 
 8.
 
+```
 -e Exit immediately if a command exits with a non-zero status.
 -u Treat unset variables as an error when substituting.
 -x Print commands and their arguments as they are executed.
 -o pipefail the return value of a pipeline is the status of the last command to exit with a non-zero status, or zero if
 no command exited with a non-zero status.
+```
+
 Данный режим обеспечит прекращение выполнения скрипта в случае ошибок и выведет информацию, (лог ошибок).
 
-9. vagrant@vagrant:~$ ps -o stat
+9.
+
+```
+   vagrant@vagrant:~$ ps -o stat
    Ss - ожидание завершения события ( s - лидер сессии)
    R+ - работающий или в очереди на выполнение( + находится в группе приоритетных процессов)
+```
 
 доп символы:
-<    high-priority (not nice to other users)
-N low-priority (nice to other users)
-L has pages locked into memory (for real-time and
+
+`< `   high-priority (not nice to other users)
+
+`N `low-priority (nice to other users)
+
+`L` has pages locked into memory (for real-time and
 custom IO)
-s is a session leader
-l is multi-threaded (using CLONE_THREAD, like NPTL
+
+`s` is a session leader
+
+`l` is multi-threaded (using CLONE_THREAD, like NPTL
 pthreads do)
 
-+ is in the foreground process group
+`+` is in the foreground process group
 
 ## Домашнее задание к занятию "3.4. Операционные системы, лекция 2"
 
 1.
 
-Cоздан unit-файл для Node Exporter
+Cоздан unit-файл для Node Exporter:
 
 ```sh
 root@vagrant:/etc/systemd/system# cat node_exporter.service
@@ -270,7 +336,7 @@ root@vagrant:/etc/systemd/system# ps -e | grep node_exporter
 ```
 
 ---------------------
-После перезапуска машины также процес запускается
+После перезапуска машины также процес запускается:
 
 ```sh
 vagrant@vagrant:/etc/systemd/system$ exit
@@ -326,11 +392,14 @@ node_network_transmit_errs_total{device="eth0"}
 
 3.
 
-Netdata установлена на виртуальной машине и открывается с хоста
-`http://localhost:19999/#menu_system_submenu_cpu;theme=slate;help=true`
+**Netdata** установлена на виртуальной машине и открывается с
+хоста `http://localhost:19999/#menu_system_submenu_cpu;theme=slate;help=true`.
+
 С метрикаим ознакомлен, удобно визуализированы различное множество метрик в виде онлайн-графиков загрузки.
 
-4. Да, данная информация содержится в dmesg
+4.
+
+Да, данная информация содержится в dmesg:
 
 ```sh
 vagrant@vagrant:~$ dmesg -T   
@@ -342,7 +411,7 @@ vagrant@vagrant:~$ dmesg -T
 
 5.
 
-```sh
+```bash
 vagrant@vagrant:~$ sysctl fs.nr_open
 fs.nr_open = 1048576
 ```
@@ -386,31 +455,41 @@ root@vagrant:/# ps
 Переменная UserTasksMax в файле `/etc/systemd/logind.conf` позволяет установить ограничение по максимальному количеству
 процессов на уровне пользователей
 
-# Домашнее задание к занятию "3.5. Файловые системы"
+## Домашнее задание к занятию "3.5. Файловые системы"
 
-1. _Разрежённый файл_ (англ. sparse file) — файл, в котором последовательности нулевых байтов
-   заменены на информацию об этих последовательностях (список дыр).
+1.
+
+_Разрежённый файл_ (англ. sparse file) — файл, в котором последовательности нулевых байтов
+заменены на информацию об этих последовательностях (список дыр).
 
 _Дыра_ (англ. hole) — последовательность нулевых байт внутри файла, не записанная на диск.
 Информация о дырах (смещение от начала файла в байтах и количество байт) хранится в метаданных ФС.
 
 **Преимущества:**
-экономия дискового пространства. Использование разрежённых файлов считается одним из способов сжатия данных на уровне
-файловой системы;
-отсутствие временных затрат на запись нулевых байт;
-увеличение срока службы запоминающих устройств.
+
+* экономия дискового пространства. Использование разрежённых файлов считается одним из способов сжатия данных на уровне
+  файловой системы;
+
+* отсутствие временных затрат на запись нулевых байт;
+
+* увеличение срока службы запоминающих устройств.
 
 **Разрежённые файлы используются для хранения контейнеров**, например:
 образов дисков виртуальных машин;
 резервных копий дисков и/или разделов, созданных спец. ПО.
 
-2. Нет.
-   В Linux каждый файл имеет уникальный идентификатор - индексный дескриптор (inode). Это число, которое однозначно
-   идентифицирует файл в файловой системе.
-   Жесткая ссылка и файл, для которой она создавалась, имеют одинаковые **inode**. Поэтому жесткая ссылка имеет те же
-   права доступа, владельца и время последней модификации, что и целевой файл.
-   Различаются только имена файлов. Фактически жесткая ссылка это еще одно имя для файла.
-3. Выполнено. Создана новая виртуальная машина с двумя дополнительными неразмеченными дисками по 2.5 Гб.
+2.
+
+Нет.
+В Linux каждый файл имеет уникальный идентификатор - **индексный дескриптор (inode)**. Это число, которое однозначно
+идентифицирует файл в файловой системе.
+Жесткая ссылка и файл, для которой она создавалась, имеют одинаковые **inode**. Поэтому жесткая ссылка имеет те же
+права доступа, владельца и время последней модификации, что и целевой файл.
+Различаются только имена файлов. Фактически жесткая ссылка это еще одно имя для файла.
+
+3.
+
+Выполнено. Создана новая виртуальная машина с двумя дополнительными неразмеченными дисками по 2.5 Гб.
 
 ````sh
 vagrant@vagrant:~$ lsblk
@@ -1308,3 +1387,157 @@ arp -d 10.0.2.2
 ```bash
 netsh interface ip delete arpcache
 ```
+
+## Домашнее задание к занятию "3.8. Компьютерные сети, лекция 3"
+
+1.
+
+```
+vagrant@vagrant:$ telnet route-views.routeviews.org
+Trying 128.223.51.103...
+Connected to route-views.routeviews.org.
+Escape character is '^]'.
+C
+**********************************************************************
+User Access Verification
+
+Username: rviews
+```
+
+```bash
+route-views>sh ip ro 178.46.36.10
+Routing entry for 178.46.32.0/19
+  Known via "bgp 6447", distance 20, metric 0
+  Tag 2497, type external
+  Last update from 202.232.0.2 7w0d ago
+  Routing Descriptor Blocks:
+  * 202.232.0.2, from 202.232.0.2, 7w0d ago
+      Route metric is 0, traffic share count is 1
+      AS Hops 2
+      Route tag 2497
+      MPLS label: none
+```
+
+**BGP (Border Gateway Protocol)** — это основной протокол динамической маршрутизации, который используется в Интернете.
+
+Маршрутизаторы, использующие протокол BGP, обмениваются информацией о доступности сетей. Вместе с информацией о сетях
+передаются различные атрибуты этих сетей, с помощью которых BGP выбирает лучший маршрут и настраиваются политики
+маршрутизации.
+
+```bash
+route-views>sh bgp 178.46.36.10
+BGP routing table entry for 178.46.32.0/19, version 2285990089
+Paths: (23 available, best #22, table default)
+  Not advertised to any peer
+  Refresh Epoch 1
+  3333 1103 12389
+    193.0.0.56 from 193.0.0.56 (193.0.0.56)
+      Origin IGP, localpref 100, valid, external
+      path 7FE09A22B308 RPKI State valid
+      rx pathid: 0, tx pathid: 0
+  Refresh Epoch 1
+  4901 6079 3356 12389
+    162.250.137.254 from 162.250.137.254 (162.250.137.254)
+      Origin IGP, localpref 100, valid, external
+      Community: 65000:10100 65000:10300 65000:10400
+      path 7FE0A6DDB240 RPKI State valid
+      rx pathid: 0, tx pathid: 0
+  Refresh Epoch 1
+  3267 12389
+    194.85.40.15 from 194.85.40.15 (185.141.126.1)
+      Origin IGP, metric 0, localpref 100, valid, external
+      path 7FE0E65A79E8 RPKI State valid
+      rx pathid: 0, tx pathid: 0
+  Refresh Epoch 1
+  8283 1299 12389
+```
+
+2.
+
+создаем 2 файла в `/etc/systemd/network/`:
+
+**10-dummy0.netdev**
+
+```
+[NetDev]
+Name=dummy0
+Kind=dummy
+```
+
+20-dummy0.network
+
+```
+[Match]
+Name=dummy0
+
+[Network]
+Address=10.2.2.2/32
+```
+
+```bash
+root@vagrant:/etc/systemd/network# systemctl restart systemd-networkd
+root@vagrant:/etc/systemd/network# ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+    inet6 ::1/128 scope host
+       valid_lft forever preferred_lft forever
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether 08:00:27:a2:6b:fd brd ff:ff:ff:ff:ff:ff
+    inet 10.0.2.15/24 brd 10.0.2.255 scope global dynamic eth0
+       valid_lft 86397sec preferred_lft 86397sec
+    inet6 fe80::a00:27ff:fea2:6bfd/64 scope link
+       valid_lft forever preferred_lft forever
+4: dummy0: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/ether 7e:f5:36:7a:89:07 brd ff:ff:ff:ff:ff:ff
+    inet 10.2.2.2/32 scope global dummy0
+       valid_lft forever preferred_lft forever
+    inet6 fe80::7cf5:36ff:fe7a:8907/64 scope link
+       valid_lft forever preferred_lft forever
+```
+
+```bash
+vagrant@vagrant:~$ sudo ip route add 10.0.3.0/24 via 10.0.2.1
+vagrant@vagrant:~$ sudo ip route add 10.0.5.0/24 via 10.0.2.1
+vagrant@vagrant:~$ route
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+default         _gateway        0.0.0.0         UG    100    0        0 eth0
+10.0.2.0        0.0.0.0         255.255.255.0   U     0      0        0 eth0
+_gateway        0.0.0.0         255.255.255.255 UH    100    0        0 eth0
+10.0.3.0        10.0.2.1        255.255.255.0   UG    0      0        0 eth0
+10.0.5.0        10.0.2.1        255.255.255.0   UG    0      0        0 eth0
+```
+
+3.
+
+Открыты порты 53 и 22:
+
+* Порт 53 использутся процессом systemd-resolve, который работает как распознаватель для DNS.
+* Порт 22 используется для ssh-соединения.
+
+```bash
+vagrant@vagrant:~$ sudo netstat -plnt
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+tcp        0      0 127.0.0.53:53           0.0.0.0:*               LISTEN      659/systemd-resolve
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      925/sshd: /usr/sbin
+tcp6       0      0 :::22                   :::*                    LISTEN      925/sshd: /usr/sbin   
+```
+4. 
+Открыты UDP-порты 53 и 68:
+
+* Порт 53 использутся процессом systemd-resolve (как и TCP-port), который работает как распознаватель для DNS.
+* Порт 68 используется процесом systemd-networkd.
+
+**systemd-networkd** — системный демон для управления сетевыми настройками. Его задачей является обнаружение и настройка сетевых устройств по мере их появления, а также создание виртуальных сетевых устройств
+```bash
+vagrant@vagrant:~$ sudo netstat -plnu
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name
+udp        0      0 127.0.0.53:53           0.0.0.0:*                           659/systemd-resolve
+udp        0      0 10.0.2.15:68            0.0.0.0:*                           19059/systemd-netwo
+```
+5.
+![](images/diagramma.png)
