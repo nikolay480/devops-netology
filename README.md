@@ -1551,12 +1551,19 @@ udp        0      0 10.0.2.15:68            0.0.0.0:*                           
 ![](images/diagramma.png)
 
 ## Домашнее задание к занятию "3.9. Элементы безопасности информационных систем"
-1. 
+
+1.
+
 ![](images/bitwarden.png)
-2. 
+
+2.
+
 ![](images/GoogleAuthent.png)
-3. 
+
+3.
+
 Установка apache2:
+
 ```bash
 vagrant@vagrant:~$ sudo apt install apache2
 vagrant@vagrant:~$ apache2 -v
@@ -1619,6 +1626,7 @@ Sep 24 09:12:14 vagrant systemd[1]: Starting The Apache HTTP Server...
 Sep 24 09:12:14 vagrant apachectl[13743]: AH00558: apache2: Could not reliably determine the server's fully qua>
 Sep 24 09:12:14 vagrant systemd[1]: Started The Apache HTTP Server.
 ```
+
 ![](images/site.png)
 
 ```bash
@@ -1634,6 +1642,7 @@ index.html.1                100%[===========================================>]  
 
 2022-09-24 10:46:18 (143 MB/s) - ‘index.html.1’ saved [2296/2296]
 ```
+
 ```bash
 vagrant@vagrant:~$ sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 > -keyout /etc/ssl/private/apache-selfsigned.key \
@@ -1645,9 +1654,11 @@ Generating a RSA private key
 writing new private key to '/etc/ssl/private/apache-selfsigned.key'
 -----
 ```
+
 ![](../../Desktop/cert.png)
 
-4. 
+4.
+
 ```bash
 vagrant@vagrant:~/testssl.sh$ ./testssl.sh -U --sneaky https://www.hawk.ru/
 
@@ -1702,7 +1713,9 @@ vagrant@vagrant:~/testssl.sh$ ./testssl.sh -U --sneaky https://www.hawk.ru/
 
  Done 2022-09-24 18:57:16 [  67s] -->> 185.65.149.76:443 (www.hawk.ru) <<--
 ```
-5. 
+
+5.
+
 ```bash
 PS F:\vagrant> vagrant ssh conor
 Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 5.4.0-110-generic x86_64)
@@ -1733,6 +1746,7 @@ Number of key(s) added: 1
 Now try logging into the machine, with:   "ssh 'vagrant@192.168.88.11'"
 and check to make sure that only the key(s) you wanted were added.
 ```
+
 ```bash
 vagrant@vagrant:~/.ssh$ ssh vagrant@192.168.88.11
 Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 5.4.0-110-generic x86_64)
@@ -1748,7 +1762,9 @@ Welcome to Ubuntu 20.04.4 LTS (GNU/Linux 5.4.0-110-generic x86_64)
   Memory usage: 20%                IPv4 address for eth1: 192.168.0.17
   Swap usage:   0%                 IPv4 address for eth2: 192.168.88.11
 ```
-6. 
+
+6.
+
 ```bash
 vagrant@vagrant:~/.ssh$ mv id_rsa id_rsa1
 vagrant@vagrant:~/.ssh$ mv id_rsa.pub id_rsa1.pub
@@ -1791,8 +1807,11 @@ This system is built by the Bento project by Chef Software
 More information can be found at https://github.com/chef/bento
 Last login: Sat Sep 24 19:21:24 2022 from 192.168.88.10
 ```
+
 7.
+
 Linux
+
 ```bash
 vagrant@vagrant:~$ sudo tcpdump -w dump.pcap -c 100 -i eth2
 tcpdump: listening on eth2, link-type EN10MB (Ethernet), capture size 262144 bytes
@@ -1800,11 +1819,13 @@ tcpdump: listening on eth2, link-type EN10MB (Ethernet), capture size 262144 byt
 101 packets received by filter
 0 packets dropped by kernel
 ```
+
 ```bash
 vagrant@vagrant:~$ sudo apt-get install wireshark tshark
 ```
 
 Имеющаяся ОС не поддерживает GUI для просмотра в wireshark.
+
 ```bash
 vagrant@vagrant:~$ wireshark
 qt.qpa.plugin: Could not load the Qt platform plugin "xcb" in "" even though it was found.
@@ -1814,4 +1835,119 @@ Available platform plugins are: eglfs, linuxfb, minimal, minimalegl, offscreen, 
 
 Aborted (core dumped)
 ```
+
 Интерфейс wirehorse рассмотрен в ОС Windows.
+
+# Домашнее задание к занятию "4.1. Командная оболочка Bash: Практические навыки"
+
+## Обязательная задача 1
+
+Есть скрипт:
+
+```bash
+a=1
+b=2
+c=a+b
+d=$a+$b
+e=$(($a+$b))
+```
+
+Какие значения переменным c,d,e будут присвоены? Почему?
+
+| Переменная  | Значение | Обоснование                                                                                                                         |
+| ------------- |----------|-------------------------------------------------------------------------------------------------------------------------------------|
+| `c`  | a + b    | т.к. строковая переменная                                                                                                           |
+| `d`  | 1 + 2    | a и b это простые числовые значения, а bash выводит выражение как последовательность переменных и знак + здесь выводится как текст. |
+| `e`  | 3        | выражение заключено в двойные скобки и будет проведен расчет арифметического выражения                                              |
+
+## Обязательная задача 2
+
+На нашем локальном сервере упал сервис и мы написали скрипт, который постоянно проверяет его доступность, записывая дату
+проверок до тех пор, пока сервис не станет доступным (после чего скрипт должен завершиться). В скрипте допущена ошибка,
+из-за которой выполнение не может завершиться, при этом место на Жёстком Диске постоянно уменьшается. Что необходимо
+сделать, чтобы его исправить:
+
+```bash
+while ((1==1)
+do
+	curl https://localhost:4757
+	if (($? != 0))
+	then
+		date >> curl.log
+	fi
+done
+```
+
+### Ваш скрипт:
+
+```bash
+while ((1==1)) # не хватало скобки ")"
+do
+	curl https://localhost:4757
+	if (($? != 0))
+	  then
+		date >> curl.log # можно использовать 'date > curl.log', тогда данные будут перезаписываться
+		sleep 5 # установить паузу, например, 5 сек
+	elif (($? == 0))
+	  then 
+	    echo "service is available" >> curl.log # если сервис доступен выводим сообщение
+            break # и выходим
+	fi
+done
+```
+
+## Обязательная задача 3
+
+Необходимо написать скрипт, который проверяет доступность трёх IP: `192.168.0.1`, `173.194.222.113`, `87.250.250.242`
+по `80` порту и записывает результат в файл `log`. Проверять доступность необходимо пять раз для каждого узла.
+
+### Ваш скрипт:
+
+```bash
+#!/bin/bash
+ip=("192.168.0.1" "173.194.222.113" "87.250.250.242")
+for i in ${ip[@]}; do #пройдем по всем элементам списка ip-адресов
+  for j in {1..5}; do  # выполним команды 5 раз
+      date >> ip.log
+      curl -Is --connect-timeout 5 $i:80 >/dev/null
+      if  (($? == 0))
+      then
+      echo $i "connect is good" >> ip.log
+      elif (($? == 1))
+      then
+      echo $i "no connect" >> ip.log
+      fi
+  done
+done
+```
+
+## Обязательная задача 4
+
+Необходимо дописать скрипт из предыдущего задания так, чтобы он выполнялся до тех пор, пока один из узлов не окажется
+недоступным. Если любой из узлов недоступен - IP этого узла пишется в файл error, скрипт прерывается.
+
+### Ваш скрипт:
+
+```bash
+#!/bin/bash
+ip=("192.168.0.1" "173.194.222.113" "87.250.250.242")
+result=0
+for i in ${ip[@]}
+do #пройдем по всем элементам списка ip-адресов
+    for j in {1..5}
+    do  # выполним команды 5 раз
+      date >> ip.log
+      curl --connect-timeout 5 $i:80 >/dev/null
+      result=$? # запишем результат вывода последней команды в переменную
+      if  (( $result == 0))
+      then
+        echo $i "connect is good" >> ip.log
+      elif (($? != 0))
+      then
+        echo $i >> error.log #  если узел не доступен - пишем ip  в  error  и
+        exit                 # прерываем выполнение
+      fi
+
+    done
+done
+```
