@@ -2035,7 +2035,6 @@ nik@HOME-PC:~$ ./pyt_scr.py
         
 ```
 
-
 ## Обязательная задача 3
 
 1. Доработать скрипт выше так, чтобы он мог проверять не только локальный репозиторий в текущей директории, а также умел
@@ -2088,11 +2087,51 @@ nik@HOME-PC:~$ ./pyt_scr2.py ~/netology/sysadm-homeworks
 ### Ваш скрипт:
 
 ```python
-???
+#!/bin/python3
+import socket
+import time
+
+servers = {'drive.google.com': '0.0.0.0', 'mail.google.com': '0.0.0.0', 'google.com': '0.0.0.0'}
+t = 0
+
+while (t < 5):
+
+    for host, ip in servers.items():
+        new_ip = socket.gethostbyname(host)
+        if (ip != new_ip):
+            print('[ERROR] {} IP mismatch: {} {}'.format(host, ip, new_ip))
+            servers[host] = new_ip
+
+    for host, ip in servers.items():
+        print(f'{host} - {ip}')
+
+    t += 1
+    time.sleep(60)
 ```
 
 ### Вывод скрипта при запуске при тестировании:
 
-```
-???
+За время тестирования ip серверов не изменился. Однако, исходя из того, что при первой проверке выдавалось сообщение об
+ошибке, и то что значения в словаре перезаписываются, можно сделать вывод, что скрипт работоспособен.
+
+```bash
+nik@HOME-PC:~$ ./pyt_scr.py
+[ERROR] drive.google.com IP mismatch: 0.0.0.0 142.250.186.174
+[ERROR] mail.google.com IP mismatch: 0.0.0.0 216.58.212.133
+[ERROR] google.com IP mismatch: 0.0.0.0 172.217.18.14
+drive.google.com - 142.250.186.174
+mail.google.com - 216.58.212.133
+google.com - 172.217.18.14
+drive.google.com - 142.250.186.174
+mail.google.com - 216.58.212.133
+google.com - 172.217.18.14
+drive.google.com - 142.250.186.174
+mail.google.com - 216.58.212.133
+google.com - 172.217.18.14
+drive.google.com - 142.250.186.174
+mail.google.com - 216.58.212.133
+google.com - 172.217.18.14
+drive.google.com - 142.250.186.174
+mail.google.com - 216.58.212.133
+google.com - 172.217.18.14
 ```
