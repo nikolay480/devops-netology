@@ -2045,13 +2045,31 @@ nik@HOME-PC:~$ ./pyt_scr.py
 ### Ваш скрипт:
 
 ```python
-???
+#!/bin/python3
+import os
+import sys
+
+path = sys.argv[1]
+
+bash_command = ["cd " + path, "git status 2>&1"]
+result_os = os.popen(' && '.join(bash_command)).read()
+
+for result in result_os.split('\n'):
+    if result.find("fatal: not a git repository (or any of the parent directories): .git") != -1:
+        print(f'Директория {path} не является локальным репозиторием')
+    if result.find('modified') != -1:
+        prepare_result = result.replace('\tmodified:   ', '')
+        print(path + '/' + prepare_result)
 ```
 
 ### Вывод скрипта при запуске при тестировании:
 
-```
-???
+```bash
+nik@HOME-PC:~$ ./pyt_scr2.py ~/netology
+Директория /home/nik/netology не является локальным репозиторием
+nik@HOME-PC:~$ ./pyt_scr2.py ~/netology/sysadm-homeworks
+/home/nik/netology/sysadm-homeworks/file1.txt
+/home/nik/netology/sysadm-homeworks/file2.txt
 ```
 
 ## Обязательная задача 4
