@@ -134,3 +134,47 @@ ________________________________________________________________________________
 
 * метод push, потому что не требует установки ни демонов, ни агентов, в случае с pull методом такие агенты нужны, что потенциально может быть еще одной точкой сбоя.
 
+### Задача 3
+Установить на личный компьютер:
+
+* VirtualBox
+* Vagrant
+* Ansible
+
+Приложить вывод команд установленных версий каждой из программ, оформленный в markdown.
+```bash
+nik@ubuntuVM:~$ vboxmanage --version
+6.1.38_Ubuntur153438
+nik@ubuntuVM:~$ vagrant --version
+Vagrant 2.2.6
+nik@ubuntuVM:~$ ansible --version
+ansible 2.9.6
+  config file = /etc/ansible/ansible.cfg
+  configured module search path = ['/home/nik/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+  ansible python module location = /usr/lib/python3/dist-packages/ansible
+  executable location = /usr/bin/ansible
+  python version = 3.8.10 (default, Jun 22 2022, 20:18:18) [GCC 9.4.0]
+```
+
+## Домашнее задание к занятию "3. Введение. Экосистема. Архитектура. Жизненный цикл Docker контейнера"
+### Задача 1
+Сценарий выполения задачи:
+
+* создайте свой репозиторий на https://hub.docker.com;
+* выберете любой образ, который содержит веб-сервер Nginx;
+* создайте свой fork образа;
+* реализуйте функциональность: запуск веб-сервера в фоне с индекс-страницей, содержащей HTML-код ниже:
+
+```html
+<html>
+<head>
+Hey, Netology
+</head>
+<body>
+<h1>I’m DevOps Engineer!</h1>
+</body>
+</html>
+```
+Опубликуйте созданный форк в своем репозитории и предоставьте ответ в виде ссылки на https://hub.docker.com/username_repo
+### Ответ
+
