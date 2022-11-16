@@ -322,4 +322,5 @@ test.txt
 
 ###  Ответ
 
-[] virt-homeworks/3 Grafana.png
+<img src="D:\Курсы\Netology\devops-netology\virt-homeworks\3 Grafana.png"/>
+
