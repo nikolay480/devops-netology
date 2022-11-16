@@ -323,4 +323,3 @@ test.txt
 ###  Ответ
 
 ![](3 Grafana.png)
-
