@@ -382,7 +382,7 @@ test.txt
 
 ### Ответ
 
-![](node ls.png)
+![](node_ls.png)
 
 ### Задача 3
 
@@ -394,7 +394,7 @@ test.txt
 
 ### Ответ
 
-![](service ls.png)
+![](service_ls.png)
 
 ### Задача 4 (*)
 
