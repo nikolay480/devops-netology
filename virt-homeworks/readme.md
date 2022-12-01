@@ -506,12 +506,12 @@ Please enter unlock key:
 системы?
 </details>
 
-### Ответ
 
 PUB-SUB(публикация-подписка) - это шаблон обмена сообщениями, в котором отправители сообщений, называемые издателями, не
 программируют сообщения для отправки непосредственно конкретным получателям, называемым подписчиками, а вместо этого
 разделяют опубликованные сообщения на классы, не зная, какие подписчики, если таковые имеются, могут быть.
 
+### Ответ
 Redis - БД типа ключ-значение с высокой производительностью.
 Для достижения максимальной производительности Redis работает с набором данных в памяти. В зависимости от варианта
 использования, Redis может сохранять данные либо путем периодического сброса набора данных на диск, либо
@@ -531,3 +531,392 @@ Redis подходит для ситуаций, когда требуется о
 `использование только тривиальной модели pub/sub`
 
 `отсутствие очередей сообщений`
+
+## Домашнее задание к занятию "6.2. SQL"
+
+### Задача 1
+Используя docker поднимите инстанс PostgreSQL (версию 12) c 2 volume, в который будут складываться данные БД и бэкапы.
+
+Приведите получившуюся команду или docker-compose манифест.
+
+`docker-compose.yaml`
+
+```yaml
+version: '3'
+services:
+ db:
+   container_name: pgs12
+   image: postgres:12
+   environment:
+     POSTGRES_USER: nikolay
+     POSTGRES_PASSWORD: mysecret
+     POSTGRES_DB: start_db
+   ports:
+     - "5432:5432"
+   volumes:      
+     - database_volume:/home/database/
+     - backup_volume:/home/backup/
+
+volumes:
+ database_volume:
+ backup_volume:
+```
+
+### Задача 2
+<details>
+В БД из задачи 1:
+
+* создайте пользователя test-admin-user и БД test_db
+
+>test_db=# CREATE USER "test-admin-user";
+> 
+>CREATE ROLE
+* в БД test_db создайте таблицу orders и clients (спeцификация таблиц ниже)
+>test_db=# CREATE TABLE orders (id SERIAL PRIMARY KEY, наименование TEXT, цена INTEGER);
+> 
+>CREATE TABLE
+
+>test_db=# CREATE TABLE clients (id SERIAL PRIMARY KEY, фамилия TEXT, "страна проживания" TEXT, заказ INTEGER, FOREIGN KEY (заказ) REFERENCES orders (id));
+>
+>CREATE TABLE
+
+* предоставьте привилегии на все операции пользователю test-admin-user на таблицы БД test_db
+>test_db=# GRANT ALL ON TABLE orders, clients TO "test-admin-user";
+> 
+>GRANT
+
+* создайте пользователя test-simple-user
+>test_db=# CREATE USER "test-simple-user" WITH PASSWORD '123456';
+> 
+>CREATE ROLE
+> 
+
+* предоставьте пользователю test-simple-user права на SELECT/INSERT/UPDATE/DELETE данных таблиц БД test_db
+>test_db=# GRANT SELECT, INSERT, UPDATE, DELETE ON orders, clients TO "test-simple-user";
+> 
+>GRANT
+
+Таблица orders:
+
+* id (serial primary key)
+* наименование (string)
+* цена (integer)
+
+Таблица clients:
+
+* id (serial primary key)
+* фамилия (string)
+* страна проживания (string, index)
+* заказ (foreign key orders)
+
+Приведите:
+
+* итоговый список БД после выполнения пунктов выше,
+```bash
+test_db=# \l
+                                    List of databases
+   Name    |  Owner  | Encoding |  Collate   |   Ctype    |      Access privileges       
+-----------+---------+----------+------------+------------+------------------------------
+ postgres  | nikolay | UTF8     | en_US.utf8 | en_US.utf8 | 
+ start_db  | nikolay | UTF8     | en_US.utf8 | en_US.utf8 | 
+ template0 | nikolay | UTF8     | en_US.utf8 | en_US.utf8 | =c/nikolay                  +
+           |         |          |            |            | nikolay=CTc/nikolay
+ template1 | nikolay | UTF8     | en_US.utf8 | en_US.utf8 | =c/nikolay                  +
+           |         |          |            |            | nikolay=CTc/nikolay
+ test_db   | nikolay | UTF8     | en_US.utf8 | en_US.utf8 | =Tc/nikolay                 +
+           |         |          |            |            | nikolay=CTc/nikolay         +
+           |         |          |            |            | "test-simple-user"=c/nikolay+
+           |         |          |            |            | "test-admin-user"=c/nikolay
+(5 rows)
+```
+
+* описание таблиц (describe)
+```bash
+test_db=# \d+ clients
+                                                      Table "public.clients"
+      Column       |  Type   | Collation | Nullable |               Default               | Storage  | Stats target | Description 
+-------------------+---------+-----------+----------+-------------------------------------+----------+--------------+-------------
+ id                | integer |           | not null | nextval('clients_id_seq'::regclass) | plain    |              | 
+ фамилия           | text    |           |          |                                     | extended |              | 
+ страна проживания | text    |           |          |                                     | extended |              | 
+ заказ             | integer |           |          |                                     | plain    |              | 
+Indexes:
+    "clients_pkey" PRIMARY KEY, btree (id)
+    "clients_страна проживания_idx" btree ("страна проживания")
+Foreign-key constraints:
+    "clients_заказ_fkey" FOREIGN KEY ("заказ") REFERENCES orders(id)
+Access method: heap
+```
+```sh
+test_db=# \d+ orders
+                                                   Table "public.orders"
+    Column    |  Type   | Collation | Nullable |              Default               | Storage  | Stats target | Description 
+--------------+---------+-----------+----------+------------------------------------+----------+--------------+-------------
+ id           | integer |           | not null | nextval('orders_id_seq'::regclass) | plain    |              | 
+ наименование | text    |           |          |                                    | extended |              | 
+ цена         | integer |           |          |                                    | plain    |              | 
+Indexes:
+    "orders_pkey" PRIMARY KEY, btree (id)
+Referenced by:
+    TABLE "clients" CONSTRAINT "clients_заказ_fkey" FOREIGN KEY ("заказ") REFERENCES orders(id)
+Access method: heap
+```
+
+* SQL-запрос для выдачи списка пользователей с правами над таблицами test_db
+```sh
+test_db=## 
+SELECT grantee, table_name, privilege_type 
+FROM information_schema.table_privileges 
+WHERE table_name in ('clients','orders');
+```
+* список пользователей с правами над таблицами test_db
+```
+grantee      | table_name | privilege_type 
+------------------+------------+----------------
+ nikolay          | orders     | INSERT
+ nikolay          | orders     | SELECT
+ nikolay          | orders     | UPDATE
+ nikolay          | orders     | DELETE
+ nikolay          | orders     | TRUNCATE
+ nikolay          | orders     | REFERENCES
+ nikolay          | orders     | TRIGGER
+ test-admin-user  | orders     | INSERT
+ test-admin-user  | orders     | SELECT
+ test-admin-user  | orders     | UPDATE
+ test-admin-user  | orders     | DELETE
+ test-admin-user  | orders     | TRUNCATE
+ test-admin-user  | orders     | REFERENCES
+ test-admin-user  | orders     | TRIGGER
+ test-simple-user | orders     | INSERT
+ test-simple-user | orders     | SELECT
+ test-simple-user | orders     | UPDATE
+ test-simple-user | orders     | DELETE
+ nikolay          | clients    | INSERT
+ nikolay          | clients    | SELECT
+ nikolay          | clients    | UPDATE
+ nikolay          | clients    | DELETE
+ nikolay          | clients    | TRUNCATE
+ nikolay          | clients    | REFERENCES
+ nikolay          | clients    | TRIGGER
+ test-admin-user  | clients    | INSERT
+ test-admin-user  | clients    | SELECT
+...skipping 1 line
+ test-admin-user  | clients    | DELETE
+ test-admin-user  | clients    | TRUNCATE
+ test-admin-user  | clients    | REFERENCES
+ test-admin-user  | clients    | TRIGGER
+ test-simple-user | clients    | INSERT
+ test-simple-user | clients    | SELECT
+ test-simple-user | clients    | UPDATE
+ test-simple-user | clients    | DELETE
+(36 rows)
+```
+</details>
+
+### Задача 3
+
+<details>
+
+Используя SQL синтаксис - наполните таблицы следующими тестовыми данными:
+
+Таблица orders
+> 
+> |Наименование|цена|
+> |------------|----|
+> |Шоколад| 10 |
+> |Принтер| 3000 |
+> |Книга| 500 |
+> |Монитор| 7000|
+> |Гитара| 4000|
+
+Таблица clients
+> 
+> |ФИО|Страна проживания|
+> |------------|----|
+> |Иванов Иван Иванович| USA |
+> |Петров Петр Петрович| Canada |
+> |Иоганн Себастьян Бах| Japan |
+> |Ронни Джеймс Дио| Russia|
+> |Ritchie Blackmore| Russia|
+
+
+
+
+```sh
+test_db=# INSERT INTO orders(наименование, цена)
+VALUES
+('Шоколад', 10),
+('Принтер', 3000),
+('Книга', 500),
+('Монитор', 7000),
+('Гитара', 4000);
+INSERT 0 5
+```
+```sh
+test_db=# INSERT INTO clients
+VALUES
+(1, 'Иванов Иван Иванович', 'USA'),
+(2, 'Петров Петр Петрович', 'Canada'),
+(3, 'Иоганн Себастьян Бах', 'Japan'),
+(4, 'Ронни Джеймс Дио', 'Russia'),
+(5, 'Ritchie Blackmore', 'Russia');
+INSERT 0 5
+```
+
+Используя SQL синтаксис:
+- вычислите количество записей для каждой таблицы 
+- приведите в ответе:
+- запросы 
+- результаты их выполнения.
+```sh
+test_db=# SELECT count(*) FROM clients;
+ count 
+-------
+     5
+(1 row)
+
+test_db=# SELECT count(*) FROM orders;
+ count 
+-------
+     5
+(1 row)
+```
+</details>
+
+### Задача 4
+<details>
+
+Часть пользователей из таблицы `clients` решили оформить заказы из таблицы `orders`.
+
+Используя `foreign keys` свяжите записи из таблиц, согласно таблице:
+
+> ФИО | Заказ |
+
+>Иванов Иван Иванович	| Книга |
+
+>Петров Петр Петрович	| Монитор |
+
+>Иоганн Себастьян Бах	| Гитара |
+
+Приведите SQL-запросы для выполнения данных операций.
+
+Можно указать непосредственно ID заказа из таблицы orders:
+```sh
+test_db=# UPDATE clients SET "заказ" = 3 WHERE "фамилия"='Иванов Иван Иванович';
+UPDATE 1
+test_db=# UPDATE clients SET "заказ" = 4 WHERE "фамилия"='Петров Петр Петрович';
+UPDATE 1
+```
+Или выполнить более сложный запрос:
+```sh
+test_db=# UPDATE clients SET "заказ" = (SELECT id FROM orders WHERE "наименование" = 'Гитара') WHERE "фамилия"='Иоганн Себастьян Бах';
+UPDATE 1
+```
+Кроме того, если использовать ID заказа, который вне таблицы orders, благодаря использованию внешнего ключа выйдет ошибка:
+```sh
+test_db=# UPDATE clients SET "заказ" = 10 WHERE "фамилия"='Иванов Иван Иванович';
+ERROR:  insert or update on table "clients" violates foreign key constraint "clients_заказ_fkey"
+DETAIL:  Key (заказ)=(10) is not present in table "orders".
+```
+Приведите SQL-запрос для выдачи всех пользователей, которые совершили заказ, а также вывод данного запроса.
+```sh
+test_db=# SELECT * FROM clients WHERE заказ IS NOT NULL;
+ id |       фамилия        | страна проживания | заказ 
+----+----------------------+-------------------+-------
+  1 | Иванов Иван Иванович | USA               |     3
+  2 | Петров Петр Петрович | Canada            |     4
+  3 | Иоганн Себастьян Бах | Japan             |     5
+(3 rows)
+```
+Или:
+```sh
+test_db=# SELECT id, фамилия, "страна проживания" FROM clients WHERE заказ IS NOT NULL;
+ id |       фамилия        | страна проживания 
+----+----------------------+-------------------
+  1 | Иванов Иван Иванович | USA
+  2 | Петров Петр Петрович | Canada
+  3 | Иоганн Себастьян Бах | Japan
+(3 rows)
+```
+Подсказкa - используйте директиву UPDATE.
+</details>
+
+### Задача 5
+
+<details>
+Получите полную информацию по выполнению запроса выдачи всех пользователей из задачи 4 (используя директиву EXPLAIN).
+Приведите получившийся результат и объясните что значат полученные значения.
+
+```sh
+test_db=# EXPLAIN SELECT * FROM clients WHERE заказ IS NOT NULL;
+                        QUERY PLAN                         
+-----------------------------------------------------------
+ Seq Scan on clients  (cost=0.00..18.10 rows=806 width=72)
+   Filter: ("заказ" IS NOT NULL)
+(2 rows)
+```
+Результат вывода команды показывает, что во время запроса выполнено последовательное чтение данных `Seq Scan`,
+
+'трудозатраты' на чтение всех строк `cost = 18.10
+
+приблизительное количество возвращаемых строк при выполнении операции - `rows=806 `
+
+средний размер одной строки в байтах w`idth=72`
+
+В запросе использован Filter, где поле заказ не пустое.
+
+</details>
+
+### Задача 6
+Создайте бэкап БД test_db и поместите его в volume, предназначенный для бэкапов (см. Задачу 1).
+
+Остановите контейнер с PostgreSQL (но не удаляйте volumes).
+
+Поднимите новый пустой контейнер с PostgreSQL.
+
+Восстановите БД test_db в новом контейнере.
+
+Приведите список операций, который вы применяли для бэкапа данных и восстановления.
+
+Проверим расположение базы данных test_db
+
+```sh
+test_db=# show data_directory;
+      data_directory      
+--------------------------
+ /var/lib/postgresql/data
+(1 row
+```
+Копируем БД в /home/backup
+
+```postgres@b705978ca712:~$ cp -r /var/lib/postgresql/data /home/backup
+postgres@b705978ca712:~$ ls -la /home/backup
+total 12
+drwxrwxrwx  3 root     root     4096 Nov 30 19:38 .
+drwxr-xr-x  1 root     root     4096 Nov 29 14:53 ..
+drwx------ 19 postgres postgres 4096 Nov 30 19:38 data
+```
+```sh
+nik@ubuntuVM:/home$ docker run  --rm -e POSTGRES_PASSWORD=12345678 --volumes-from pgs12 -d --name pgs12-2 postgres:12
+e23227f0dc060985688045dc8fd7cc9f3207ee94640a921d5f5bd54889385b97
+nik@ubuntuVM:/home$ docker ps -a
+CONTAINER ID   IMAGE         COMMAND                  CREATED          STATUS                      PORTS      NAMES
+e23227f0dc06   postgres:12   "docker-entrypoint.s…"   42 seconds ago   Up 40 seconds               5432/tcp   pgs12-2
+b705978ca712   postgres:12   "docker-entrypoint.s…"   2 days ago       Exited (0) 51 minutes ago              pgs12
+nik@ubuntuVM:/home$ docker exec -it pgs12-2 bash
+root@e23227f0dc06:/# ls /home/backup
+data
+root@e23227f0dc06:/# psql -U nikolay -d test_db 
+psql (12.13 (Debian 12.13-1.pgdg110+1))
+Type "help" for help.
+
+test_db=# \d
+              List of relations
+ Schema |      Name      |   Type   |  Owner  
+--------+----------------+----------+---------
+ public | clients        | table    | nikolay
+ public | clients_id_seq | sequence | nikolay
+ public | orders         | table    | nikolay
+ public | orders_id_seq  | sequence | nikolay
+(4 rows)
+```
