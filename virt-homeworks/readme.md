@@ -1261,3 +1261,200 @@ innodb_log_file_size = 100M          # Размер файла логов опе
 ```
 ___
 </details>
+
+# Домашнее задание к занятию "6.4. PostgreSQL"
+
+## Задача 1
+
+Используя docker поднимите инстанс PostgreSQL (версию 13). Данные БД сохраните в volume.
+`docker compose -f "docker-compose-postgres.yaml" up -d --build`
+
+```yaml
+version: '3.8'
+volumes:
+  pg13vol:
+services:
+  pg_db:
+    image: postgres:13
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=mysecret
+    volumes:
+      - pg13vol:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+```
+```bash
+nik@ubuntuVM:~/netology/6.SQL/MySQL$ docker ps
+CONTAINER ID   IMAGE         COMMAND                  CREATED          STATUS         PORTS                                       NAMES
+a7126bb61621   postgres:13   "docker-entrypoint.s…"   13 seconds ago   Up 9 seconds   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   postgres-pg_db-1
+nik@ubuntuVM:~/netology/6.SQL/MySQL$ docker exec -it postgres-pg_db-1 bash
+```
+Подключитесь к БД PostgreSQL используя `psql`.
+```bash
+root@a7126bb61621:/# psql -U postgres
+psql (13.9 (Debian 13.9-1.pgdg110+1))
+Type "help" for help.
+```
+Воспользуйтесь командой `\?` для вывода подсказки по имеющимся в `psql` управляющим командам.
+
+**Найдите и приведите** управляющие команды для:
+- вывода списка
+> \l
+
+- подключения к БД
+> `\c[onnect] {[DBNAME|- USER|- HOST|- PORT|-] | conninfo}`  - connect to new database (currently "postgres"
+
+> `\conninfo ` - display information about current connection
+
+```bash
+postgres=# \conninfo
+You are connected to database "postgres" as user "postgres" via socket in "/var/run/postgresql" at port "5432".
+```
+
+- вывода списка таблиц
+
+> `\dt[S] [PATTERN] `     list tables
+
+```bash
+postgres=# \dtS
+                    List of relations
+   Schema   |          Name           | Type  |  Owner   
+------------+-------------------------+-------+----------
+ pg_catalog | pg_aggregate            | table | postgres
+ pg_catalog | pg_am                   | table | postgres
+ pg_catalog | pg_amop                 | table | postgres
+ pg_catalog | pg_amproc               | table | postgres
+ pg_catalog | pg_attrdef              | table | postgres
+ pg_catalog | pg_attribute            | table | postgres
+ pg_catalog | pg_auth_members         | table | postgres
+```
+
+- вывода описания содержимого таблиц
+> `\dS+` - list tables
+
+> (options: S = show system objects, + = additional detail)
+```bash
+postgres=# \dtS+
+                                        List of relations
+   Schema   |          Name           | Type  |  Owner   | Persistence |    Size    | Description 
+------------+-------------------------+-------+----------+-------------+------------+-------------
+ pg_catalog | pg_aggregate            | table | postgres | permanent   | 56 kB      | 
+ pg_catalog | pg_am                   | table | postgres | permanent   | 40 kB      | 
+```
+
+- выхода из psql
+```bash
+> `\q`   - quit psql
+```
+
+## Задача 2
+
+Используя `psql` создайте БД `test_database`.
+```bash
+postgres=# CREATE DATABASE test_database;
+CREATE DATABASE
+```
+
+
+Изучите [бэкап БД](https://github.com/netology-code/virt-homeworks/tree/virt-11/06-db-04-postgresql/test_data).
+
+Восстановите бэкап БД в `test_database`.
+
+ 
+
+```bash
+postgres@a7126bb61621:/$ psql -d test_database < /tmp/test_dump.sql
+````
+<details>
+
+```bash
+SET
+SET
+SET
+SET
+SET
+ set_config 
+------------
+ 
+(1 row)
+
+SET
+SET
+SET
+SET
+SET
+SET
+CREATE TABLE
+ALTER TABLE
+CREATE SEQUENCE
+ALTER TABLE
+ALTER SEQUENCE
+ALTER TABLE
+COPY 8
+ setval 
+--------
+      8
+(1 row)
+
+ALTER TABLE
+```
+</details>
+
+Перейдите в управляющую консоль `psql` внутри контейнера.
+
+```bash
+postgres@a7126bb61621:/$ psql
+psql (13.9 (Debian 13.9-1.pgdg110+1))
+Type "help" for help.
+
+```
+
+Подключитесь к восстановленной БД и проведите операцию ANALYZE для сбора статистики по таблице.
+
+```bash
+postgres=# \c test_database 
+You are now connected to database "test_database" as user "postgres".
+test_database=# ANALYZE VERBOSE orders;
+INFO:  analyzing "public.orders"
+INFO:  "orders": scanned 1 of 1 pages, containing 8 live rows and 0 dead rows; 8 rows in sample, 8 estimated total rows
+ANALYZE
+
+```
+
+Используя таблицу [pg_stats](https://postgrespro.ru/docs/postgresql/12/view-pg-stats), найдите столбец таблицы `orders` 
+с наибольшим средним значением размера элементов в байтах.
+
+**Приведите в ответе** команду, которую вы использовали для вычисления и полученный результат.
+
+```bash
+test_database=# SELECT tablename, avg_width FROM pg_stats  WHERE avg_width = (SELECT max(avg_width) FROM pg_stats WHERE tablename = 'orders');
+ tablename | avg_width 
+-----------+-----------
+ orders    |        16
+(1 row)
+```
+
+## Задача 3
+
+Архитектор и администратор БД выяснили, что ваша таблица orders разрослась до невиданных размеров и
+поиск по ней занимает долгое время. Вам, как успешному выпускнику курсов DevOps в нетологии предложили
+провести разбиение таблицы на 2 (шардировать на orders_1 - price>499 и orders_2 - price<=499).
+
+Предложите SQL-транзакцию для проведения данной операции.
+
+Можно ли было изначально исключить "ручное" разбиение при проектировании таблицы orders?
+
+## Задача 4
+
+Используя утилиту `pg_dump` создайте бекап БД `test_database`.
+
+Как бы вы доработали бэкап-файл, чтобы добавить уникальность значения столбца `title` для таблиц `test_database`?
+
+---
+
+### Как cдавать задание
+
+Выполненное домашнее задание пришлите ссылкой на .md-файл в вашем репозитории.
+
+---
