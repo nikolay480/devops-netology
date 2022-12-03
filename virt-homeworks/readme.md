@@ -512,6 +512,7 @@ PUB-SUB(публикация-подписка) - это шаблон обмен�
 разделяют опубликованные сообщения на классы, не зная, какие подписчики, если таковые имеются, могут быть.
 
 ### Ответ
+
 Redis - БД типа ключ-значение с высокой производительностью.
 Для достижения максимальной производительности Redis работает с набором данных в памяти. В зависимости от варианта
 использования, Redis может сохранять данные либо путем периодического сброса набора данных на диск, либо
@@ -532,9 +533,11 @@ Redis подходит для ситуаций, когда требуется о
 
 `отсутствие очередей сообщений`
 
-## Домашнее задание к занятию "6.2. SQL"
+# Домашнее задание к занятию "6.2. SQL"
 
-### Задача 1
+## Задача 1
+<details>
+
 Используя docker поднимите инстанс PostgreSQL (версию 12) c 2 volume, в который будут складываться данные БД и бэкапы.
 
 Приведите получившуюся команду или docker-compose манифест.
@@ -544,56 +547,64 @@ Redis подходит для ситуаций, когда требуется о
 ```yaml
 version: '3'
 services:
- db:
-   container_name: pgs12
-   image: postgres:12
-   environment:
-     POSTGRES_USER: nikolay
-     POSTGRES_PASSWORD: mysecret
-     POSTGRES_DB: start_db
-   ports:
-     - "5432:5432"
-   volumes:      
-     - database_volume:/home/database/
-     - backup_volume:/home/backup/
+  db:
+    container_name: pgs12
+    image: postgres:12
+    environment:
+      POSTGRES_USER: nikolay
+      POSTGRES_PASSWORD: mysecret
+      POSTGRES_DB: start_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - database_volume:/home/database/
+      - backup_volume:/home/backup/
 
 volumes:
- database_volume:
- backup_volume:
+  database_volume:
+  backup_volume:
 ```
+</details>
 
-### Задача 2
+## Задача 2
+
 <details>
 В БД из задачи 1:
 
 * создайте пользователя test-admin-user и БД test_db
 
->test_db=# CREATE USER "test-admin-user";
-> 
->CREATE ROLE
-* в БД test_db создайте таблицу orders и clients (спeцификация таблиц ниже)
->test_db=# CREATE TABLE orders (id SERIAL PRIMARY KEY, наименование TEXT, цена INTEGER);
-> 
->CREATE TABLE
-
->test_db=# CREATE TABLE clients (id SERIAL PRIMARY KEY, фамилия TEXT, "страна проживания" TEXT, заказ INTEGER, FOREIGN KEY (заказ) REFERENCES orders (id));
+> test_db=# CREATE USER "test-admin-user";
 >
->CREATE TABLE
+> CREATE ROLE
+
+* в БД test_db создайте таблицу orders и clients (спeцификация таблиц ниже)
+
+> test_db=# CREATE TABLE orders (id SERIAL PRIMARY KEY, наименование TEXT, цена INTEGER);
+>
+> CREATE TABLE
+
+> test_db=# CREATE TABLE clients (id SERIAL PRIMARY KEY, фамилия TEXT, "страна проживания" TEXT, заказ INTEGER, FOREIGN
+> KEY (заказ) REFERENCES orders (id));
+>
+> CREATE TABLE
 
 * предоставьте привилегии на все операции пользователю test-admin-user на таблицы БД test_db
->test_db=# GRANT ALL ON TABLE orders, clients TO "test-admin-user";
-> 
+
+> test_db=# GRANT ALL ON TABLE orders, clients TO "test-admin-user";
+>
 >GRANT
 
 * создайте пользователя test-simple-user
->test_db=# CREATE USER "test-simple-user" WITH PASSWORD '123456';
-> 
+
+> test_db=# CREATE USER "test-simple-user" WITH PASSWORD '123456';
+>
 >CREATE ROLE
-> 
+>
 
 * предоставьте пользователю test-simple-user права на SELECT/INSERT/UPDATE/DELETE данных таблиц БД test_db
->test_db=# GRANT SELECT, INSERT, UPDATE, DELETE ON orders, clients TO "test-simple-user";
-> 
+
+> test_db=# GRANT SELECT, INSERT, UPDATE, DELETE ON orders, clients TO "test-simple-user";
+>
 >GRANT
 
 Таблица orders:
@@ -612,6 +623,7 @@ volumes:
 Приведите:
 
 * итоговый список БД после выполнения пунктов выше,
+
 ```bash
 test_db=# \l
                                     List of databases
@@ -631,6 +643,7 @@ test_db=# \l
 ```
 
 * описание таблиц (describe)
+
 ```bash
 test_db=# \d+ clients
                                                       Table "public.clients"
@@ -647,6 +660,7 @@ Foreign-key constraints:
     "clients_заказ_fkey" FOREIGN KEY ("заказ") REFERENCES orders(id)
 Access method: heap
 ```
+
 ```sh
 test_db=# \d+ orders
                                                    Table "public.orders"
@@ -663,13 +677,16 @@ Access method: heap
 ```
 
 * SQL-запрос для выдачи списка пользователей с правами над таблицами test_db
+
 ```sh
 test_db=## 
 SELECT grantee, table_name, privilege_type 
 FROM information_schema.table_privileges 
 WHERE table_name in ('clients','orders');
 ```
+
 * список пользователей с правами над таблицами test_db
+
 ```
 grantee      | table_name | privilege_type 
 ------------------+------------+----------------
@@ -711,16 +728,17 @@ grantee      | table_name | privilege_type
  test-simple-user | clients    | DELETE
 (36 rows)
 ```
+
 </details>
 
-### Задача 3
+## Задача 3
 
 <details>
 
 Используя SQL синтаксис - наполните таблицы следующими тестовыми данными:
 
 Таблица orders
-> 
+>
 > |Наименование|цена|
 > |------------|----|
 > |Шоколад| 10 |
@@ -730,7 +748,7 @@ grantee      | table_name | privilege_type
 > |Гитара| 4000|
 
 Таблица clients
-> 
+>
 > |ФИО|Страна проживания|
 > |------------|----|
 > |Иванов Иван Иванович| USA |
@@ -738,9 +756,6 @@ grantee      | table_name | privilege_type
 > |Иоганн Себастьян Бах| Japan |
 > |Ронни Джеймс Дио| Russia|
 > |Ritchie Blackmore| Russia|
-
-
-
 
 ```sh
 test_db=# INSERT INTO orders(наименование, цена)
@@ -752,6 +767,7 @@ VALUES
 ('Гитара', 4000);
 INSERT 0 5
 ```
+
 ```sh
 test_db=# INSERT INTO clients
 VALUES
@@ -764,10 +780,12 @@ INSERT 0 5
 ```
 
 Используя SQL синтаксис:
-- вычислите количество записей для каждой таблицы 
+
+- вычислите количество записей для каждой таблицы
 - приведите в ответе:
-- запросы 
+- запросы
 - результаты их выполнения.
+
 ```sh
 test_db=# SELECT count(*) FROM clients;
  count 
@@ -781,9 +799,11 @@ test_db=# SELECT count(*) FROM orders;
      5
 (1 row)
 ```
+
 </details>
 
-### Задача 4
+## Задача 4
+
 <details>
 
 Часть пользователей из таблицы `clients` решили оформить заказы из таблицы `orders`.
@@ -792,33 +812,41 @@ test_db=# SELECT count(*) FROM orders;
 
 > ФИО | Заказ |
 
->Иванов Иван Иванович	| Книга |
+> Иванов Иван Иванович | Книга |
 
->Петров Петр Петрович	| Монитор |
+> Петров Петр Петрович | Монитор |
 
->Иоганн Себастьян Бах	| Гитара |
+> Иоганн Себастьян Бах | Гитара |
 
 Приведите SQL-запросы для выполнения данных операций.
 
 Можно указать непосредственно ID заказа из таблицы orders:
+
 ```sh
 test_db=# UPDATE clients SET "заказ" = 3 WHERE "фамилия"='Иванов Иван Иванович';
 UPDATE 1
 test_db=# UPDATE clients SET "заказ" = 4 WHERE "фамилия"='Петров Петр Петрович';
 UPDATE 1
 ```
+
 Или выполнить более сложный запрос:
+
 ```sh
 test_db=# UPDATE clients SET "заказ" = (SELECT id FROM orders WHERE "наименование" = 'Гитара') WHERE "фамилия"='Иоганн Себастьян Бах';
 UPDATE 1
 ```
-Кроме того, если использовать ID заказа, который вне таблицы orders, благодаря использованию внешнего ключа выйдет ошибка:
+
+Кроме того, если использовать ID заказа, который вне таблицы orders, благодаря использованию внешнего ключа выйдет
+ошибка:
+
 ```sh
 test_db=# UPDATE clients SET "заказ" = 10 WHERE "фамилия"='Иванов Иван Иванович';
 ERROR:  insert or update on table "clients" violates foreign key constraint "clients_заказ_fkey"
 DETAIL:  Key (заказ)=(10) is not present in table "orders".
 ```
+
 Приведите SQL-запрос для выдачи всех пользователей, которые совершили заказ, а также вывод данного запроса.
+
 ```sh
 test_db=# SELECT * FROM clients WHERE заказ IS NOT NULL;
  id |       фамилия        | страна проживания | заказ 
@@ -828,7 +856,9 @@ test_db=# SELECT * FROM clients WHERE заказ IS NOT NULL;
   3 | Иоганн Себастьян Бах | Japan             |     5
 (3 rows)
 ```
+
 Или:
+
 ```sh
 test_db=# SELECT id, фамилия, "страна проживания" FROM clients WHERE заказ IS NOT NULL;
  id |       фамилия        | страна проживания 
@@ -838,10 +868,11 @@ test_db=# SELECT id, фамилия, "страна проживания" FROM cl
   3 | Иоганн Себастьян Бах | Japan
 (3 rows)
 ```
+
 Подсказкa - используйте директиву UPDATE.
 </details>
 
-### Задача 5
+## Задача 5
 
 <details>
 Получите полную информацию по выполнению запроса выдачи всех пользователей из задачи 4 (используя директиву EXPLAIN).
@@ -855,6 +886,7 @@ test_db=# EXPLAIN SELECT * FROM clients WHERE заказ IS NOT NULL;
    Filter: ("заказ" IS NOT NULL)
 (2 rows)
 ```
+
 Результат вывода команды показывает, что во время запроса выполнено последовательное чтение данных `Seq Scan`,
 
 'трудозатраты' на чтение всех строк `cost = 18.10
@@ -867,7 +899,8 @@ test_db=# EXPLAIN SELECT * FROM clients WHERE заказ IS NOT NULL;
 
 </details>
 
-### Задача 6
+## Задача 6
+<details>
 Создайте бэкап БД test_db и поместите его в volume, предназначенный для бэкапов (см. Задачу 1).
 
 Остановите контейнер с PostgreSQL (но не удаляйте volumes).
@@ -887,6 +920,7 @@ test_db=# show data_directory;
  /var/lib/postgresql/data
 (1 row
 ```
+
 Копируем БД в /home/backup
 
 ```postgres@b705978ca712:~$ cp -r /var/lib/postgresql/data /home/backup
@@ -896,6 +930,7 @@ drwxrwxrwx  3 root     root     4096 Nov 30 19:38 .
 drwxr-xr-x  1 root     root     4096 Nov 29 14:53 ..
 drwx------ 19 postgres postgres 4096 Nov 30 19:38 data
 ```
+
 ```sh
 nik@ubuntuVM:/home$ docker run  --rm -e POSTGRES_PASSWORD=12345678 --volumes-from pgs12 -d --name pgs12-2 postgres:12
 e23227f0dc060985688045dc8fd7cc9f3207ee94640a921d5f5bd54889385b97
@@ -920,3 +955,309 @@ test_db=# \d
  public | orders_id_seq  | sequence | nikolay
 (4 rows)
 ```
+</details>
+
+
+# Домашнее задание к занятию "6.3. MySQL"
+
+## Введение
+
+Перед выполнением задания вы можете ознакомиться с
+[дополнительными материалами](https://github.com/netology-code/virt-homeworks/blob/virt-11/additional/README.md).
+
+## Задача 
+
+<details>
+Используя docker поднимите инстанс MySQL (версию 8). Данные БД сохраните в volume.
+
+```yaml
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    cap_add:
+      - SYS_NICE
+    restart: always
+    environment:
+      - MYSQL_DATABASE=quotes
+      - MYSQL_ROOT_PASSWORD=mysecret
+    ports:
+      - '3306:3306'
+    volumes:
+      - db:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+volumes:
+  db:
+    driver: local
+```    
+
+> `docker compose -f "docker-compose_mysql.yaml" up -d --build `
+
+
+Изучите [бэкап БД](https://github.com/netology-code/virt-homeworks/tree/virt-11/06-db-03-mysql/test_data) и
+восстановитесь из него.
+
+```shell
+nik@ubuntuVM:~/netology/6.SQL/MySQL$ docker ps
+CONTAINER ID   IMAGE       COMMAND                  CREATED              STATUS              PORTS                                                  NAMES
+7e99d5f40931   mysql:8.0   "docker-entrypoint.s…"   About a minute ago   Up About a minute   0.0.0.0:3306->3306/tcp, :::3306->3306/tcp, 33060/tcp   mysql-db-1
+```
+
+```shell
+
+nik@ubuntuVM:~/netology/6.SQL/MySQL$ docker cp test_dump.sql mysql-db-1:/var/tmp/test_dump.sql
+nik@ubuntuVM:~/netology/6.SQL/MySQL$ docker exec -it mysql-db-1 bash
+bash-4.4# mysql -u root -p quotes  < /var/tmp/test_dump.sql
+Enter password: 
+
+```
+
+Перейдите в управляющую консоль `mysql` внутри контейнера.
+
+```shell
+bash-4.4# mysql -u root -p quotes                          
+Enter password: 
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 13
+Server version: 8.0.31 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2022, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement
+```
+
+Используя команду `\h` получите список управляющих команд.
+
+Найдите команду для выдачи статуса БД и **приведите в ответе** из ее вывода версию сервера БД.
+> Server version:         8.0.31 MySQL Community Server - GPL
+
+```shell
+
+mysql> \s
+--------------
+mysql  Ver 8.0.31 for Linux on x86_64 (MySQL Community Server - GPL)
+
+Connection id:          20
+Current database:
+Current user:           root@localhost
+SSL:                    Not in use
+Current pager:          stdout
+Using outfile:          ''
+Using delimiter:        ;
+Server version:         8.0.31 MySQL Community Server - GPL
+Protocol version:       10
+Connection:             Localhost via UNIX socket
+Server characterset:    utf8mb4
+Db     characterset:    utf8mb4
+Client characterset:    latin1
+Conn.  characterset:    latin1
+UNIX socket:            /var/run/mysqld/mysqld.sock
+Binary data as:         Hexadecimal
+Uptime:                 27 min 44 sec
+
+Threads: 2  Questions: 117  Slow queries: 0  Opens: 196  Flush tables: 3  Open tables: 111  Queries per second avg: 0.070
+--------------
+```
+
+Подключитесь к восстановленной БД и получите список таблиц из этой БД.
+
+```shell
+mysql> USE quotes
+Reading table information for completion of table and column names
+You can turn off this feature to get a quicker startup with -A
+
+Database changed
+mysql> SHOW TABLES;
++------------------+
+| Tables_in_quotes |
++------------------+
+| orders           |
++------------------+
+1 row in set (0.00 sec)
+```
+
+**Приведите в ответе** количество записей с `price` > 300
+
+```shell
+mysql> SELECT * FROM orders WHERE price > 300;
++----+----------------+-------+
+| id | title          | price |
++----+----------------+-------+
+|  2 | My little pony |   500 |
++----+----------------+-------+
+1 row in set (0.00 sec)
+```
+
+В следующих заданиях мы будем продолжать работу с данным контейнером.
+_________________________________________
+
+</details>
+
+
+## Задача 2
+
+<details>
+
+Создайте пользователя test в БД c паролем test-pass, используя:
+
+- плагин авторизации mysql_native_password
+- срок истечения пароля - 180 дней
+- количество попыток авторизации - 3
+- максимальное количество запросов в час - 100
+- аттрибуты пользователя:
+    - Фамилия "Pretty"
+    - Имя "James"
+
+```shell
+mysql>
+CREATE USER 'test'@'localhost' 
+IDENTIFIED WITH mysql_native_password BY 'test-pass'
+WITH MAX_CONNECTIONS_PER_HOUR 100
+PASSWORD EXPIRE INTERVAL 180 DAY
+FAILED_LOGIN_ATTEMPTS 3 PASSWORD_LOCK_TIME 2
+ATTRIBUTE '{"first_name":"James", "last_name":"Pretty"}';
+
+Query OK, 0 rows affected (0.02 sec)
+```
+
+Предоставьте привелегии пользователю `test` на операции SELECT базы `test_db`.
+
+```shell
+mysql> GRANT SELECT ON quotes.* TO test@localhost;
+Query OK, 0 rows affected, 1 warning (0.02 sec)
+```
+
+Используя таблицу INFORMATION_SCHEMA.USER_ATTRIBUTES получите данные по пользователю `test` и
+**приведите в ответе к задаче**.
+
+```bash
+mysql> SELECT * FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER='test';
+
++------+-----------+------------------------------------------------+
+| USER | HOST      | ATTRIBUTE                                      |
++------+-----------+------------------------------------------------+
+| test | localhost | {"last_name": "Pretty", "first_name": "James"} |
++------+-----------+------------------------------------------------+
+1 row in set (0.00 sec)
+```
+___
+</details>
+
+
+## Задача 3
+
+<details>
+
+Установите профилирование `SET profiling = 1`.
+Изучите вывод профилирования команд `SHOW PROFILES;`.
+
+Исследуйте, какой `engine` используется в таблице БД `test_db` и **приведите в ответе**.
+
+```bash
+mysql
+> SELECT table_schema,table_name,engine FROM information_schema.tables WHERE table_schema = 'quotes';
++--------------+------------+--------+
+| TABLE_SCHEMA | TABLE_NAME | ENGINE |
++--------------+------------+--------+
+| quotes       | orders     | InnoDB |
++--------------+------------+--------+
+1 row in set (0.01 sec)
+```
+
+Измените `engine` и **приведите время выполнения и запрос на изменения из профайлера в ответе**:
+
+- на `MyISAM`
+- на `InnoDB`
+
+```shell
+mysql> ALTER TABLE orders ENGINE = MyISAM;
+Query OK, 5 rows affected (0.12 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE orders ENGINE = InnoDB;
+Query OK, 5 rows affected (0.12 sec)
+Records: 5  Duplicates: 0  Warnings: 0
+
+mysql> SHOW PROFILES;
++----------+------------+------------------------------------------------------------------------------------------------------+
+| Query_ID | Duration   | Query                                                                                                |
++----------+------------+------------------------------------------------------------------------------------------------------+
+|        1 | 0.00008400 | SHOW PROFILES ALL                                                                                    |
+|        ......                                                    |
+         ....
+|        7 | 0.12425150 | ALTER TABLE orders ENGINE = MyISAM                                                                   |
+|        8 | 0.12438275 | ALTER TABLE orders ENGINE = InnoDB                                                                   |
++----------+------------+------------------------------------------------------------------------------------------------------+
+```
+___
+</details>
+
+## Задача 4
+
+<details>
+Изучите файл `my.cnf` в директории /etc/mysql.
+
+Измените его согласно ТЗ (движок InnoDB):
+
+- Скорость IO важнее сохранности данных
+- Нужна компрессия таблиц для экономии места на диске
+- Размер буффера с незакомиченными транзакциями 1 Мб
+- Буффер кеширования 30% от ОЗУ
+- Размер файла логов операций 100 Мб
+
+Приведите в ответе измененный файл `my.cnf`
+
+```bash
+bash-4.4# cat /etc/my.cnf
+# For advice on how to change settings please see
+# http://dev.mysql.com/doc/refman/8.0/en/server-configuration-defaults.html
+
+[mysqld]
+#
+# Remove leading # and set to the amount of RAM for the most important data
+# cache in MySQL. Start at 70% of total RAM for dedicated server, else 10%.
+# innodb_buffer_pool_size = 128M
+#
+# Remove leading # to turn on a very important data integrity option: logging
+# changes to the binary log between backups.
+# log_bin
+#
+# Remove leading # to set options mainly useful for reporting servers.
+# The server defaults are faster for transactions and fast SELECTs.
+# Adjust sizes as needed, experiment to find the optimal values.
+# join_buffer_size = 128M
+# sort_buffer_size = 2M
+# read_rnd_buffer_size = 2M
+
+# Remove leading # to revert to previous value for default_authentication_plugin,
+# this will increase compatibility with older clients. For background, see:
+# https://dev.mysql.com/doc/refman/8.0/en/server-system-variables.html#sysvar_default_authentication_plugin
+# default-authentication-plugin=mysql_native_password
+skip-host-cache
+skip-name-resolve
+datadir=/var/lib/mysql
+socket=/var/run/mysqld/mysqld.sock
+secure-file-priv=/var/lib/mysql-files
+user=mysql
+
+pid-file=/var/run/mysqld/mysqld.pid
+[client]
+socket=/var/run/mysqld/mysqld.sock
+
+!includedir /etc/mysql/conf.d/
+
+innodb_flush_log_at_trx_commit = 2   # Скорость IO важнее сохранности данных
+innodb_file_per_table = ON           # Нужна компрессия таблиц для экономии места на диске. таблицы хранятся по разным файла
+innodb_log_buffer_size = 1M          # Размер буффера с незакомиченными транзакциями 1 Мб
+innodb_buffer_pool_size = 1.7G       # Буффер кеширования 30% от ОЗУ
+innodb_log_file_size = 100M          # Размер файла логов операций 100 Мб
+```
+___
+</details>
