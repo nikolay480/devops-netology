@@ -965,7 +965,7 @@ test_db=# \d
 Перед выполнением задания вы можете ознакомиться с
 [дополнительными материалами](https://github.com/netology-code/virt-homeworks/blob/virt-11/additional/README.md).
 
-## Задача 
+## Задача 1
 
 <details>
 Используя docker поднимите инстанс MySQL (версию 8). Данные БД сохраните в volume.
