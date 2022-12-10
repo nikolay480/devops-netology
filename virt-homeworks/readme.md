@@ -26,7 +26,6 @@ _Опишите кратко, как вы поняли: в чем основно
 
 Основное отличие паравиртуализации от остальных типов виртуализации - необходимость модификации ядра гостевой ОС.
 
-
 ### Задача 2
 
 Выберите один из вариантов использования организации физических серверов, в зависимости от условий использования.
@@ -77,7 +76,6 @@ Windows системы для использования бухгалтерск�
 2) Могут подойти Xen, KVM. Xen - кроссплатформенный гипервизор.
 3) Microsoft Hyper-V Server имеющий наибольшую совместимость с Windows системами. Как альтернатива - Xen.
 4) Наибольшую скорость развёртывания в данном случае могут обеспечить решения виртуализации уровне ОС - Docker, Podman.
-
 
 ### Задача 4
 
@@ -297,6 +295,7 @@ test.txt
 `https://hub.docker.com/repository/docker/nikolay480/ansible`
 
 ___
+
 ## Домашнее задание к занятию "4. Оркестрация группой Docker контейнеров на примере Docker Compose"
 
 ### Задача 1
@@ -545,6 +544,7 @@ ___
 # Домашнее задание к занятию "6.2. SQL"
 
 ## Задача 1
+
 <details>
 
 Используя docker поднимите инстанс PostgreSQL (версию 12) c 2 volume, в который будут складываться данные БД и бэкапы.
@@ -573,6 +573,7 @@ volumes:
   database_volume:
   backup_volume:
 ```
+
 </details>
 
 ## Задача 2
@@ -909,6 +910,7 @@ test_db=# EXPLAIN SELECT * FROM clients WHERE заказ IS NOT NULL;
 </details>
 
 ## Задача 6
+
 <details>
 Создайте бэкап БД test_db и поместите его в volume, предназначенный для бэкапов (см. Задачу 1).
 
@@ -964,6 +966,7 @@ test_db=# \d
  public | orders_id_seq  | sequence | nikolay
 (4 rows)
 ```
+
 </details>
 
 ___
@@ -971,6 +974,7 @@ ___
 # Домашнее задание к занятию "6.3. MySQL"
 
 #
+
 [дополнительные материалы](https://github.com/netology-code/virt-homeworks/blob/virt-11/additional/README.md)
 
 ## Задача 1
@@ -1108,7 +1112,6 @@ _________________________________________
 
 </details>
 
-
 ## Задача 2
 
 <details>
@@ -1155,9 +1158,9 @@ mysql> SELECT * FROM INFORMATION_SCHEMA.USER_ATTRIBUTES WHERE USER='test';
 +------+-----------+------------------------------------------------+
 1 row in set (0.00 sec)
 ```
+
 ___
 </details>
-
 
 ## Задача 3
 
@@ -1204,6 +1207,7 @@ mysql> SHOW PROFILES;
 |        8 | 0.12438275 | ALTER TABLE orders ENGINE = InnoDB                                                                   |
 +----------+------------+------------------------------------------------------------------------------------------------------+
 ```
+
 ___
 </details>
 
@@ -1267,6 +1271,7 @@ innodb_log_buffer_size = 1M          # Размер буффера с незак
 innodb_buffer_pool_size = 1.7G       # Буффер кеширования 30% от ОЗУ
 innodb_log_file_size = 100M          # Размер файла логов операций 100 Мб
 ```
+
 ___
 </details>
 
@@ -1296,25 +1301,32 @@ services:
     ports:
       - 5432:5432
 ```
+
 ```bash
 nik@ubuntuVM:~/netology/6.SQL/MySQL$ docker ps
 CONTAINER ID   IMAGE         COMMAND                  CREATED          STATUS         PORTS                                       NAMES
 a7126bb61621   postgres:13   "docker-entrypoint.s…"   13 seconds ago   Up 9 seconds   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   postgres-pg_db-1
 nik@ubuntuVM:~/netology/6.SQL/MySQL$ docker exec -it postgres-pg_db-1 bash
 ```
+
 Подключитесь к БД PostgreSQL используя `psql`.
+
 ```bash
 root@a7126bb61621:/# psql -U postgres
 psql (13.9 (Debian 13.9-1.pgdg110+1))
 Type "help" for help.
 ```
+
 Воспользуйтесь командой `\?` для вывода подсказки по имеющимся в `psql` управляющим командам.
 
 **Найдите и приведите** управляющие команды для:
+
 - вывода списка
+
 > \l
 
 - подключения к БД
+
 > `\c[onnect] {[DBNAME|- USER|- HOST|- PORT|-] | conninfo}`  - connect to new database (currently "postgres"
 
 > `\conninfo ` - display information about current connection
@@ -1343,9 +1355,11 @@ postgres=# \dtS
 ```
 
 - вывода описания содержимого таблиц
+
 > `\dS+` - list tables
 
 > (options: S = show system objects, + = additional detail)
+
 ```bash
 postgres=# \dtS+
                                         List of relations
@@ -1356,12 +1370,15 @@ postgres=# \dtS+
 ```
 
 - выхода из psql
+
 ```bash
 > `\q`   - quit psql
 ```
+
 </details>
 
 ## Задача 2
+
 <details>
 Используя `psql` создайте БД `test_database`.
 ```bash
@@ -1374,11 +1391,10 @@ CREATE DATABASE
 
 Восстановите бэкап БД в `test_database`.
 
- 
-
 ```bash
 postgres@a7126bb61621:/$ psql -d test_database < /tmp/test_dump.sql
 ````
+
 <details>
 
 ```bash
@@ -1412,6 +1428,7 @@ COPY 8
 
 ALTER TABLE
 ```
+
 </details>
 
 Перейдите в управляющую консоль `psql` внутри контейнера.
@@ -1435,7 +1452,7 @@ ANALYZE
 
 ```
 
-Используя таблицу [pg_stats](https://postgrespro.ru/docs/postgresql/12/view-pg-stats), найдите столбец таблицы `orders` 
+Используя таблицу [pg_stats](https://postgrespro.ru/docs/postgresql/12/view-pg-stats), найдите столбец таблицы `orders`
 с наибольшим средним значением размера элементов в байтах.
 
 **Приведите в ответе** команду, которую вы использовали для вычисления и полученный результат.
@@ -1447,9 +1464,11 @@ test_database=# SELECT tablename, avg_width FROM pg_stats  WHERE avg_width = (SE
  orders    |        16
 (1 row)
 ```
+
 </details>
 
-## Задача 3 
+## Задача 3
+
 <details>
 Архитектор и администратор БД выяснили, что ваша таблица orders разрослась до невиданных размеров и
 поиск по ней занимает долгое время. Вам, как успешному выпускнику курсов DevOps в нетологии предложили
@@ -1459,6 +1478,7 @@ test_database=# SELECT tablename, avg_width FROM pg_stats  WHERE avg_width = (SE
 
 [Масштабирование базы данных через шардирование и партиционирование](https://habr.com/ru/company/oleg-bunin/blog/309330/)
 [Партицирование таблиц в PostgreSQL: чек-лист для старта](https://habr.com/ru/company/skyeng/blog/583222/)
+
 ```bash
 test_database=# CREATE TABLE orders_1 (CHECK (price > 499)) INHERITS (orders);
 CREATE TABLE
@@ -1477,8 +1497,8 @@ INSERT 0 5
 `CREATE TABLE orders_1 PARTITION OF orders ...`
 </details>
 
-
 ## Задача 4
+
 <details>
 Используя утилиту `pg_dump` создайте бекап БД `test_database`.
 ```bash
@@ -1486,6 +1506,7 @@ postgres@a7126bb61621:/$ pg_dump -d test_database > /tmp/dump_test_database.sql
 ```
 
 Как бы вы доработали бэкап-файл, чтобы добавить уникальность значения столбца `title` для таблиц `test_database`?
+
 ```
 CREATE TABLE public.orders (
     id integer NOT NULL,
@@ -1493,6 +1514,303 @@ CREATE TABLE public.orders (
     price integer DEFAULT 0
 );
 ```
+
 </details>
 
-____
+___
+
+# Домашнее задание к занятию "6.5. Elasticsearch"
+
+## Задача 1
+
+<details>
+В этом задании вы потренируетесь в:
+- установке elasticsearch
+- первоначальном конфигурировании elastcisearch
+- запуске elasticsearch в docker
+
+Используя докер образ [centos:7](https://hub.docker.com/_/centos) как базовый и
+[документацию по установке и запуску Elastcisearch](https://www.elastic.co/guide/en/elasticsearch/reference/current/targz.html):
+
+- составьте Dockerfile-манифест для elasticsearch
+- соберите docker-образ и сделайте `push` в ваш docker.io репозиторий
+- запустите контейнер из получившегося образа и выполните запрос пути `/` c хост-машины
+
+Требования к `elasticsearch.yml`:
+
+- данные `path` должны сохраняться в `/var/lib`
+- имя ноды должно быть `netology_test`
+
+В ответе приведите:
+
+- текст Dockerfile манифеста
+
+```yaml
+FROM centos:7
+
+EXPOSE 9200
+
+ARG ES_HOME=/var/lib/elasticsearch
+ARG ES_PATH_CONF=/var/lib/elasticsearch/config
+
+COPY ./elasticsearch-7.15.0-linux-x86_64.tar.gz .
+
+RUN mkdir /var/lib/elasticsearch && \
+mkdir /var/lib/elasticsearch/config
+
+RUN tar -xzf /elasticsearch-7.15.0-linux-x86_64.tar.gz && \
+cp -r elasticsearch-7.15.0/* ${ES_HOME} && \
+rm -r elasticsearch-7.15.0
+
+RUN adduser elastic && chown -R elastic ${ES_HOME} && chown -R elastic /var/lib
+
+COPY --chown=elastic config/* ${ES_PATH_CONF}
+
+USER elastic
+
+ENV ES_HOME="/var/lib/elasticsearch/" \
+ES_PATH_CONF="/var/lib/elasticsearch/config"
+
+WORKDIR ${ES_HOME}
+
+CMD "${ES_HOME}/bin/elasticsearch"
+```
+
+- ссылку на образ в репозитории
+  `https://hub.docker.com/repository/docker/nikolay480/elastic`
+
+- ответ `elasticsearch` на запрос пути `/` в json виде
+
+```bash
+[elastic@e5b0830d78e8 elasticsearch]$ export ES_URL=localhost:9200
+
+[elastic@3456f4e8cd6b elasticsearch]$ curl $ES_URL
+{
+  "name" : "netology_test",
+  "cluster_name" : "elasticsearch",
+  "cluster_uuid" : "Ca_aVo2vRqCMipTh8jVuQA",
+  "version" : {
+    "number" : "7.15.0",
+    "build_flavor" : "default",
+    "build_type" : "tar",
+    "build_hash" : "79d65f6e357953a5b3cbcc5e2c7c21073d89aa29",
+    "build_date" : "2021-09-16T03:05:29.143308416Z",
+    "build_snapshot" : false,
+    "lucene_version" : "8.9.0",
+    "minimum_wire_compatibility_version" : "6.8.0",
+    "minimum_index_compatibility_version" : "6.0.0-beta1"
+  },
+  "tagline" : "You Know, for Search"
+}
+```
+
+Подсказки:
+
+- возможно вам понадобится установка пакета perl-Digest-SHA для корректной работы пакета shasum
+- при сетевых проблемах внимательно изучите кластерные и сетевые настройки в elasticsearch.yml
+- при некоторых проблемах вам поможет docker директива ulimit
+- elasticsearch в логах обычно описывает проблему и пути ее решения
+
+Далее мы будем работать с данным экземпляром elasticsearch.
+
+</details>
+
+## Задача 2
+
+<details>
+
+В этом задании вы научитесь:
+
+- создавать и удалять индексы
+- изучать состояние кластера
+- обосновывать причину деградации доступности данных
+
+Ознакомтесь с [документацией](https://www.elastic.co/guide/en/elasticsearch/reference/current/indices-create-index.html)
+и добавьте в `elasticsearch` 3 индекса, в соответствии со таблицей:
+
+| Имя | Количество реплик | Количество шард |
+|-----|-------------------|-----------------|
+| ind-1| 0 | 1 |
+| ind-2 | 1 | 2 |
+| ind-3 | 2 | 4 |
+
+> Добавление индексов
+
+``` bash
+[elastic@e5b0830d78e8 elasticsearch]$ curl -X PUT "$ES_URL/ind-1?pretty" -H "Content-Type:application/json" -d '{"settings": {"index": {"number_of_shards": 1, "number_of_replicas": 0}}}'
+{
+  "acknowledged" : true,
+  "shards_acknowledged" : true,
+  "index" : "ind-1"
+}
+[elastic@e5b0830d78e8 elasticsearch]$ curl -X PUT "$ES_URL/ind-2?pretty" -H "Content-Type:application/json" -d '{"settings": {"index": {"number_of_shards": 2, "number_of_replicas": 1}}}'
+{
+  "acknowledged" : true,
+  "shards_acknowledged" : true,
+  "index" : "ind-2"
+}
+[elastic@e5b0830d78e8 elasticsearch]$ curl -X PUT "$ES_URL/ind-3?pretty" -H "Content-Type:application/json" -d '{"settings": {"index": {"number_of_shards": 2, "number_of_replicas": 4}}}'
+{
+  "acknowledged" : true,
+  "shards_acknowledged" : true,
+  "index" : "ind-3"
+}
+```
+
+Получите список индексов и их статусов, используя API и **приведите в ответе**
+
+```bash
+[elastic@e5b0830d78e8 elasticsearch]$ curl $ES_URL/_cat/indices  
+green  open .geoip_databases JmBXdUjBQR-tVSbHBuz1Ig 1 0 40 0 38mb 38mb
+green  open ind-1            r1Eith1aS8uL0KSDWIFHUQ 1 0  0 0 208b 208b
+yellow open ind-3            i4xdIHtWTnOUhEq_SahVqA 2 4  0 0 416b 416b
+yellow open ind-2            qieCV0TTSGGlhdNVnkHJhQ 2 1  0 0 416b 416b
+```
+
+Получите состояние кластера `elasticsearch`, используя API.
+
+```bash
+[elastic@e5b0830d78e8 elasticsearch]$ curl -X GET "$ES_URL/_cluster/health?pretty"
+{
+  "cluster_name" : "elasticsearch",
+  "status" : "yellow",
+  "timed_out" : false,
+  "number_of_nodes" : 1,
+  "number_of_data_nodes" : 1,
+  "active_primary_shards" : 6,
+  "active_shards" : 6,
+  "relocating_shards" : 0,
+  "initializing_shards" : 0,
+  "unassigned_shards" : 10,
+  "delayed_unassigned_shards" : 0,
+  "number_of_pending_tasks" : 0,
+  "number_of_in_flight_fetch" : 0,
+  "task_max_waiting_in_queue_millis" : 0,
+  "active_shards_percent_as_number" : 37.5
+}
+```
+
+Как вы думаете, почему часть индексов и кластер находится в состоянии yellow?
+
+`YELLOW статус указывает, что один или несколько сегментов реплики в кластере Elasticsearch не выделены узлу.
+Пока статус желтый, операции поиска и индексации по-прежнему доступны.
+Elasticsearch никогда не назначит реплику тому же узлу, что и prime shard. Аналогично, если количество реплик равно или
+превышает количество узлов, то невозможно будет выделить один или несколько сегментов по той же причине.`
+
+Удалите все индексы.
+
+`[elastic@e5b0830d78e8 elasticsearch]$ curl -X DELETE $ES_URL/ind-{1..3}
+`
+
+**Важно**
+
+При проектировании кластера elasticsearch нужно корректно рассчитывать количество реплик и шард,
+иначе возможна потеря данных индексов, вплоть до полной, при деградации системы.
+
+</details>
+
+## Задача 3
+
+<details>
+В данном задании вы научитесь:
+
+- создавать бэкапы данных
+- восстанавливать индексы из бэкапов
+
+Создайте директорию `{путь до корневой директории с elasticsearch в образе}/snapshots`.
+
+Используя
+API [зарегистрируйте](https://www.elastic.co/guide/en/elasticsearch/reference/current/snapshots-register-repository.html#snapshots-register-repository)
+данную директорию как `snapshot repository` c именем `netology_backup`.
+
+**Приведите в ответе** запрос API и результат вызова API для создания репозитория.
+
+``` bash
+[elastic@a2b11c9d9e6f elasticsearch]$ curl -X PUT -H "Content-Type:application/json" -d '{"type": "fs", "settings": {"location": "/var/lib/elasticsearch/snapshots"}}' $ES_URL/_snapshot/netology_backup
+{"acknowledged":true}
+elastic@a2b11c9d9e6f elasticsearch]$ curl http://localhost:9200/_snapshot/netology_backup
+{"netology_backup":{"type":"fs","settings":{"location":"/var/lib/elasticsearch/snapshots"}}} 
+```
+
+Создайте индекс `test` с 0 реплик и 1 шардом и **приведите в ответе** список индексов.
+
+```bash
+
+[elastic@a2b11c9d9e6f elasticsearch]$ curl -X PUT -H "Content-Type:application/json" -d '{"settings": {"index": {"number_of_shards": 1, "number_of_replicas": 0}}}' $ES_URL/test
+{"acknowledged":true,"shards_acknowledged":true,"index":"test"}
+
+[elastic@a2b11c9d9e6f ~]$ curl $ES_URL/_cat/indices 
+green open .geoip_databases E-UdPMaOST-tHvxwiGR1CQ 1 0 40 0 38mb 38mb
+green open test             Fyrp6i5oTFyR4DhVWvm2gA 1 0  0 0 208b 208b
+
+```
+
+[Создайте `snapshot`](https://www.elastic.co/guide/en/elasticsearch/reference/current/snapshots-take-snapshot.html)
+состояния кластера `elasticsearch`.
+
+```bash
+[elastic@e19b62d98ac1 elasticsearch]$ curl -X PUT localhost:9200/_snapshot/netology_backup/snapshot_1?wait_for_completion=true
+{"snapshot":{"snapshot":"snapshot_1","uuid":"IsvwvZZaS7q5LQR8UvCJjw","repository":"netology_backup","version_id":7150099,"version":"7.15.0","indices":
+[".geoip_databases","test"],"data_streams":[],"include_global_state":true,"state":"SUCCESS","start_time":"2022-12-10T17:09:41.958Z","start_time_in_millis":1670692181958,
+"end_time":"2022-12-10T17:09:43.165Z","end_time_in_millis":1670692183165,"duration_in_millis":1207,"failures":[],"shards":{"total":2,"failed":0,"successful":2},
+"feature_states":[{"feature_name":"geoip","indices":[".geoip_databases"]}]}}
+```
+
+**Приведите в ответе** список файлов в директории со `snapshot`ами.
+
+```bash
+[elastic@e19b62d98ac1 elasticsearch]$ ls -lah /var/lib/elasticsearch/snapshots
+total 56K
+drwxr-xr-x 3 elastic root    4.0K Dec 10 17:09 .
+drwxr-xr-x 1 elastic root    4.0K Dec 10 16:28 ..
+-rw-r--r-- 1 elastic elastic  828 Dec 10 17:09 index-0
+-rw-r--r-- 1 elastic elastic    8 Dec 10 17:09 index.latest
+drwxr-xr-x 4 elastic elastic 4.0K Dec 10 17:09 indices
+-rw-r--r-- 1 elastic elastic  27K Dec 10 17:09 meta-IsvwvZZaS7q5LQR8UvCJjw.dat
+-rw-r--r-- 1 elastic elastic  437 Dec 10 17:09 snap-IsvwvZZaS7q5LQR8UvCJjw.dat
+
+```
+
+Удалите индекс `test` и создайте индекс `test-2`. **Приведите в ответе** список индексов.
+
+```bash
+elastic@e19b62d98ac1 elasticsearch]$ curl -X DELETE http://localhost:9200/test
+{"acknowledged":true}
+```
+
+```bash
+curl -X PUT -H "Content-Type:application/json" -d '{"settings": {"index": {"number_of_shards": 1, "number_of_replicas": 0}}}' http://localhost:9200/test-2
+{"acknowledged":true,"shards_acknowledged":true,"index":"test-2"
+
+elastic@e19b62d98ac1 elasticsearch]$ curl localhost:9200/_cat/indices  
+green open .geoip_databases Dkw3dXHUT6G8Y6pMTvG7wA 1 0 40 0 38mb 38mb
+green open test-2           d-2TGzvBQzOsrIfrT7Oc7A 1 0  0 0 208b 208b
+
+```
+
+
+[Восстановите](https://www.elastic.co/guide/en/elasticsearch/reference/current/snapshots-restore-snapshot.html)
+состояние
+кластера `elasticsearch` из `snapshot`, созданного ранее.
+
+**Приведите в ответе** запрос к API восстановления и итоговый список индексов.
+```bash
+elastic@e19b62d98ac1 elasticsearch]$ curl -X POST "localhost:9200/_snapshot/netology_backup/snapshot_1/_restore?pretty" -H 'Content-Type: application/json' -d '{"indices": "*","include_global_state": true}'
+{
+  "accepted" : true
+}
+```
+```bash
+[elastic@e19b62d98ac1 elasticsearch]$ curl 'localhost:9200/_cat/indices?pretty'
+green open .geoip_databases dI0VT978SGOTRjkKwyL-BQ 1 0 40 0 38mb 38mb
+green open test-2           d-2TGzvBQzOsrIfrT7Oc7A 1 0  0 0 208b 208b
+green open test             y4jQ1_3mT0ecTdUIvt7EKQ 1 0  0 0 208b 208b
+```
+
+Подсказки:
+
+- возможно вам понадобится доработать `elasticsearch.yml` в части директивы `path.repo` и перезапустить `elasticsearch`
+
+</details>
+
+_______
