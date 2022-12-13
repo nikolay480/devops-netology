@@ -1939,7 +1939,9 @@ InterfaceError: (InterfaceError) 2013: Lost connection to MySQL server during qu
 > конфиг-файле.
 
 </details>
+
 ---
+
 # Домашнее задание к занятию "7.1. Инфраструктура как код"
 
 ## Задача 1. Выбор инструментов. 
@@ -1978,7 +1980,7 @@ InterfaceError: (InterfaceError) 2013: Lost connection to MySQL server during qu
 ` нет` `У Ansible, CloudFormation и Terraform по умолчанию нет центрального сервера.`
 
 3. Будут ли агенты на серверах?
-` нет` Ansible, CloudFormation и Terraform по умолчанию не требуют предустановленных агентов.
+` нет` `Ansible, CloudFormation и Terraform по умолчанию не требуют предустановленных агентов.`
 
 4. Будут ли использованы средства для управления конфигурацией или инициализации ресурсов
 `Terrraform для инициализации, Ansible для управления конфигурацией`
@@ -2033,13 +2035,16 @@ on linux_amd64
 Для установки еще одной версии terraform выполним следующие дейcтвия:
 
 - создадим директорию для хранения бинарного файла и перейдем в неё
+
 ```bash
 nik@ubuntuVM:~$  mkdir -p /usr/local/tf/11
 ```
+
 ```bash
 nik@ubuntuVM:~$ cd /usr/local/tf/11
 ```
 - загрузим с официального репозитория архив `terraform` необходимой версии, распакуем его и удалим скачанный архив
+
 ```bash
 nik@ubuntuVM:/usr/local/tf/11$ sudo wget https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip
 --2022-12-13 21:50:18--  https://releases.hashicorp.com/terraform/0.11.14/terraform_0.11.14_linux_amd64.zip
@@ -2051,14 +2056,17 @@ Saving to: ‘terraform_0.11.14_linux_amd64.zip.1’
 terraform_0.11.14_linux_amd64.zip.1           100%[=================================================================================================>]  11,99M  6,91MB/s    in 1,7s    
 2022-12-13 21:50:20 (6,91 MB/s) - ‘terraform_0.11.14_linux_amd64.zip’ saved [12569267/12569267]
 ```
+
 ```bash
 nik@ubuntuVM:/usr/local/tf/11$ unzip terraform_0.11.14_linux_amd64.zip
 Archive:  terraform_0.11.14_linux_amd64.zip
   inflating: terraform  
 ```
+
 ```bash
 nik@ubuntuVM:/usr/local/tf/11$ rm terraform_0.11.14_linux_amd64.zip
 ```
+
 - создадим символическую ссылку в `/usr/bin/` каталоге:
 
 ```bash
