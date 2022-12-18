@@ -7,7 +7,7 @@ provider "yandex" {
 
 // Create a new instance
 
-resource "yandex_compute_instance" "vm-test1" {
+resource "yandex_compute_instance" "vm-centos" {
   name                      = "test1"
   zone                      = "ru-central1-a"
   allow_stopping_for_update = true
@@ -26,22 +26,22 @@ resource "yandex_compute_instance" "vm-test1" {
   }
 
   network_interface {
-    subnet_id = yandex_vpc_subnet.subnet_terraform.id
+    subnet_id = yandex_vpc_subnet.my_subnet.id
     nat       = true
   }
 
   metadata = {
-    user-data = "${file("./meta.yml")}"
+    ssh-keys = "centos:${file("~/.ssh/id_rsa.pub")}"
   }
 }
 
-resource "yandex_vpc_network" "network_terraform" {
+resource "yandex_vpc_network" "my_network" {
   name = "net_terraform"
 }
 
-resource "yandex_vpc_subnet" "subnet_terraform" {
+resource "yandex_vpc_subnet" "my_subnet" {
   name           = "sub_terraform"
   zone           = "ru-central1-a"
-  network_id     = yandex_vpc_network.network_terraform.id
-  v4_cidr_blocks = ["192.168.15.0/24"]
+  network_id     = yandex_vpc_network.my_network.id
+  v4_cidr_blocks = ["192.168.100.0/24"]
 }
