@@ -1,0 +1,6 @@
+  - name: nik
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh-keys:
+      - nik:~/.ssh/id_rsa.pub
