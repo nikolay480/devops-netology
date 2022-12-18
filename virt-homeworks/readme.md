@@ -2085,13 +2085,13 @@ Terraform v0.11.14
 ```
 </details>
 
+____
+
 # Домашнее задание к занятию "7.2. Облачные провайдеры и синтаксис Terraform."
 
-Зачастую разбираться в новых инструментах гораздо интересней понимая то, как они работают изнутри. 
-Поэтому в рамках первого *необязательного* задания предлагается завести свою учетную запись в AWS (Amazon Web Services) или Yandex.Cloud.
-Идеально будет познакомится с обоими облаками, потому что они отличаются. 
-
 ## Задача 1 (Вариант с Yandex.Cloud). Регистрация в ЯО и знакомство с основами (необязательно, но крайне желательно).
+
+<details>
 
 1. Подробная инструкция на русском языке содержится [здесь](https://cloud.yandex.ru/docs/solutions/infrastructure-management/terraform-quickstart).
 2. Обратите внимание на период бесплатного использования после регистрации аккаунта. 
@@ -2106,8 +2106,11 @@ Terraform v0.11.14
   export YC_CLOUD_ID="**********"
   export YC_FOLDER_ID="***********"
 ```
+</details>
+
 ## Задача 2. Создание aws ec2 или yandex_compute_instance через терраформ. 
 
+<details>
 1. В каталоге `terraform` вашего основного репозитория, который был создан в начале курсе, создайте файл `main.tf` и `versions.tf`.
 2. Зарегистрируйте провайдер 
    1. для [aws](https://registry.terraform.io/providers/hashicorp/aws/latest/docs). В файл `main.tf` добавьте
@@ -2140,6 +2143,6 @@ Terraform v0.11.14
 > Свой образ можно создать с помощью [Packer](https://cloud.yandex.ru/docs/tutorials/infrastructure-management/packer-custom-image). 
 
 2. Ссылку на [репозиторий](https://github.com/nikolay480/devops-netology/tree/main/terraform) с исходной конфигурацией терраформа.  
- 
----
+</details>
+
 ___
