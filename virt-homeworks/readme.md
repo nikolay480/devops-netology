@@ -2370,9 +2370,12 @@ Created and switched to workspace "prod"!
    жизненного цикла `create_before_destroy = true` в один из ресурсов `aws_instance`.
 6. При желании поэкспериментируйте с другими параметрами и ресурсами.
 
+В результате получим сдедующую конфигурацию [терраформ]
+(terraform/7.3. S3)
 В виде результата работы пришлите:
 
 * Вывод команды `terraform workspace list`.
+
 ```bash
 * nik@ubuntuVM:~/netology/7.3.TerraformS3$ terraform workspace list
   default
