@@ -2360,7 +2360,7 @@ Created and switched to workspace "stage"!
 nik@ubuntuVM:~/netology/7.3.TerraformS3$ terraform workspace new prod
 Created and switched to workspace "prod"!
 ```
-
+![](C:/Users/nik/Desktop/2022-12-25_01-01-41.png)
 2. В уже созданный `aws_instance` добавьте зависимость типа инстанса от воркспейса, чтобы в разных ворскспейсах
    использовались разные `instance_type`.
 
@@ -2370,8 +2370,8 @@ Created and switched to workspace "prod"!
    жизненного цикла `create_before_destroy = true` в один из ресурсов `aws_instance`.
 6. При желании поэкспериментируйте с другими параметрами и ресурсами.
 
-В результате получим сдедующую конфигурацию [терраформ]
-(terraform/7.3. S3)
+В результате получим сдедующую конфигурацию [терраформ](https://github.com/nikolay480/devops-netology/tree/main/terraform/7.3.%20S3)
+
 В виде результата работы пришлите:
 
 * Вывод команды `terraform workspace list`.
