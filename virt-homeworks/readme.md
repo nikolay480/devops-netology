@@ -2212,7 +2212,95 @@ ___
    пользователя,
    а можно использовать созданного в рамках предыдущего задания, просто добавьте ему необходимы права, как описано
    [здесь](https://www.terraform.io/docs/backends/types/s3.html).
-1. Зарегистрируйте бэкэнд в терраформ проекте как описано по ссылке выше.
+2. Зарегистрируйте бэкэнд в терраформ проекте как описано по ссылке выше.
+
+Создадим  S3 bucket  в yandex сloud, для этого создадим terraform-файл:
+```terraform
+terraform {
+ required_providers {
+   yandex = {
+     source  = "yandex-cloud/yandex"
+   }
+ } 
+ required_version = ">= 1.3.4"
+ }
+
+// Configure the Yandex.Cloud provider
+provider "yandex" {
+  #token     = ""
+  cloud_id  = ""
+  folder_id = ""
+  zone = "ru-central1-a"
+}
+
+// Use keys to create bucket
+resource "yandex_storage_bucket" "mybucket-netology-dev" {
+# access_key = ""
+# secret_key = ""
+  bucket     = "test-mybucket-netology"
+} 
+```
+Перед запуском добавим переменные окружения:
+
+```bash
+export YC_TOKEN=""
+export YC_CLOUD_ID=""
+export YC_FOLDER_ID=""
+export YC_STORAGE_ACCESS_KEY=""
+export YC_STORAGE_SECRET_KEY=""
+```
+Значения` access key` и `secret key ` получим, выполнив команду `yc iam access-key create --service-account-id xxxxxx`
+
+```bash
+nik@ubuntuVM:~/netology/terraformS3$ terraform apply
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are
+indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # yandex_storage_bucket.mybucket-netology-dev will be created
+  + resource "yandex_storage_bucket" "mybucket-netology-dev" {
+      + acl                   = "private"
+      + bucket                = "test-mybucket-netology"
+      + bucket_domain_name    = (known after apply)
+      + default_storage_class = (known after apply)
+      + folder_id             = (known after apply)
+      + force_destroy         = false
+      + id                    = (known after apply)
+      + website_domain        = (known after apply)
+      + website_endpoint      = (known after apply)
+
+      + anonymous_access_flags {
+          + list = (known after apply)
+          + read = (known after apply)
+        }
+
+      + versioning {
+          + enabled = (known after apply)
+        }
+    }
+
+Plan: 1 to add, 0 to change, 0 to destroy.
+
+Do you want to perform these actions?
+  Terraform will perform the actions described above.
+  Only 'yes' will be accepted to approve.
+
+  Enter a value: yes
+
+yandex_storage_bucket.mybucket-netology-dev: Creating...
+yandex_storage_bucket.mybucket-netology-dev: Still creating... [10s elapsed]
+yandex_storage_bucket.mybucket-netology-dev: Still creating... [20s elapsed]
+yandex_storage_bucket.mybucket-netology-dev: Still creating... [30s elapsed]
+yandex_storage_bucket.mybucket-netology-dev: Still creating... [40s elapsed]
+yandex_storage_bucket.mybucket-netology-dev: Still creating... [50s elapsed]
+yandex_storage_bucket.mybucket-netology-dev: Still creating... [1m0s elapsed]
+yandex_storage_bucket.mybucket-netology-dev: Creation complete after 1m1s [id=test-mybucket-netology]
+
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+```
 
 ## Задача 2. Инициализируем проект и создаем воркспейсы.
 
@@ -2220,18 +2308,572 @@ ___
     * если был создан бэкэнд в S3, то терраформ создат файл стейтов в S3 и запись в таблице
       dynamodb.
     * иначе будет создан локальный файл со стейтами.
+
+```bash
+nik@ubuntuVM:~/netology/7.3.TerraformS3$ terraform init
+
+Initializing the backend...
+
+Successfully configured the backend "s3"! Terraform will automatically
+use this backend unless the backend configuration changes.
+
+Initializing provider plugins...
+- Finding latest version of yandex-cloud/yandex...
+- Installing yandex-cloud/yandex v0.84.0...
+- Installed yandex-cloud/yandex v0.84.0 (unauthenticated)
+
+Terraform has created a lock file .terraform.lock.hcl to record the provider
+selections it made above. Include this file in your version control repository
+so that Terraform can guarantee to make the same selections by default when
+you run "terraform init" in the future.
+
+╷
+│ Warning: Incomplete lock file information for providers
+│ 
+│ Due to your customized provider installation methods, Terraform was forced to calculate lock file checksums locally for the following providers:
+│   - yandex-cloud/yandex
+│ 
+│ The current .terraform.lock.hcl file only includes checksums for linux_amd64, so Terraform running on another platform will fail to install these providers.
+│ 
+│ To calculate additional checksums for another platform, run:
+│   terraform providers lock -platform=linux_amd64
+│ (where linux_amd64 is the platform to generate)
+╵
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+```
+
 1. Создайте два воркспейса `stage` и `prod`.
-1. В уже созданный `aws_instance` добавьте зависимость типа инстанса от вокспейса, что бы в разных ворскспейсах
+
+```bash
+nik@ubuntuVM:~/netology/7.3.TerraformS3$ terraform workspace new stage
+Created and switched to workspace "stage"!
+
+nik@ubuntuVM:~/netology/7.3.TerraformS3$ terraform workspace new prod
+Created and switched to workspace "prod"!
+```
+
+2. В уже созданный `aws_instance` добавьте зависимость типа инстанса от воркспейса, чтобы в разных ворскспейсах
    использовались разные `instance_type`.
-1. Добавим `count`. Для `stage` должен создаться один экземпляр `ec2`, а для `prod` два.
-1. Создайте рядом еще один `aws_instance`, но теперь определите их количество при помощи `for_each`, а не `count`.
-1. Что бы при изменении типа инстанса не возникло ситуации, когда не будет ни одного инстанса добавьте параметр
-   жизненного цикла `create_before_destroy = true` в один из рессурсов `aws_instance`.
-1. При желании поэкспериментируйте с другими параметрами и рессурсами.
+
+3. Добавим `count`. Для `stage` должен создаться один экземпляр `ec2`, а для `prod` два.
+4. Создайте рядом еще один `aws_instance`, но теперь определите их количество при помощи `for_each`, а не `count`.
+5. Что бы при изменении типа инстанса не возникло ситуации, когда не будет ни одного инстанса добавьте параметр
+   жизненного цикла `create_before_destroy = true` в один из ресурсов `aws_instance`.
+6. При желании поэкспериментируйте с другими параметрами и ресурсами.
 
 В виде результата работы пришлите:
 
 * Вывод команды `terraform workspace list`.
+```bash
+* nik@ubuntuVM:~/netology/7.3.TerraformS3$ terraform workspace list
+  default
+* prod
+  stage
+```
+
 * Вывод команды `terraform plan` для воркспейса `prod`.
+```bash
+nik@ubuntuVM:~/netology/7.3.TerraformS3$ terraform plan
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # yandex_compute_instance.vm-test[0] will be created
+  + resource "yandex_compute_instance" "vm-test" {
+      + allow_stopping_for_update = true
+      + created_at                = (known after apply)
+      + folder_id                 = (known after apply)
+      + fqdn                      = (known after apply)
+      + hostname                  = (known after apply)
+      + id                        = (known after apply)
+      + metadata                  = {
+          + "ssh-keys" = <<-EOT
+                centos:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCylBPREkPhpTqSCTKbQ66TZlKvim7YsJe1JBnDqeQacxUAjSVUf0xS3cy/UwxYgHzzvXudwPiJ/k8TCWUyOb39NFteeXRzTc5jhFi3tCYMvdqfgXmdwD5BkaRtAiQph0d9MuVFOBypdzDV89ZR/C1eV4u0s/yUQ7pZCOprAUV01Q1SDpKDHLCy8S3Mceg73cYAiZ7PDAfNuuKWAS2i3mLklfa8wQBQQ/mxGjSTTJUQmpl3HioSgd86fPn5xTLsSbEGDZ630ujtb3QbRe8Dndi8uiq9kVugZ0CeUlxgDMgSBKG+MdICPh8W1qnXReu63WwfR9GH0faPEA3wmojkbFtNaPUnqjD8+/8D0EytTEclQvDXOD3jF0NV7uAzACp/9DITmxMDoqH+cMX9v1wE5TlkY47zQhu2gaI51fUM1WTWx76FtlO5l5yEK8L+sn46eNIkVPaOB03WlV816AX/= nik@ubuntuVM
+            EOT
+        }
+      + name                      = "srv-1"
+      + network_acceleration_type = "standard"
+      + platform_id               = "standard-v2"
+      + service_account_id        = (known after apply)
+      + status                    = (known after apply)
+      + zone                      = "ru-central1-a"
+
+      + boot_disk {
+          + auto_delete = true
+          + device_name = (known after apply)
+          + disk_id     = (known after apply)
+          + mode        = (known after apply)
+
+          + initialize_params {
+              + block_size  = (known after apply)
+              + description = (known after apply)
+              + image_id    = "fd84grruhvq2be8986bl"
+              + name        = (known after apply)
+              + size        = 20
+              + snapshot_id = (known after apply)
+              + type        = "nerwork-ssd"
+            }
+        }
+
+      + metadata_options {
+          + aws_v1_http_endpoint = (known after apply)
+          + aws_v1_http_token    = (known after apply)
+          + gce_http_endpoint    = (known after apply)
+          + gce_http_token       = (known after apply)
+        }
+
+      + network_interface {
+          + index              = (known after apply)
+          + ip_address         = (known after apply)
+          + ipv4               = true
+          + ipv6               = (known after apply)
+          + ipv6_address       = (known after apply)
+          + mac_address        = (known after apply)
+          + nat                = true
+          + nat_ip_address     = (known after apply)
+          + nat_ip_version     = (known after apply)
+          + security_group_ids = (known after apply)
+          + subnet_id          = (known after apply)
+        }
+
+      + placement_policy {
+          + host_affinity_rules = (known after apply)
+          + placement_group_id  = (known after apply)
+        }
+
+      + resources {
+          + core_fraction = 100
+          + cores         = 2
+          + memory        = 2
+        }
+
+      + scheduling_policy {
+          + preemptible = (known after apply)
+        }
+    }
+
+  # yandex_compute_instance.vm-test[1] will be created
+  + resource "yandex_compute_instance" "vm-test" {
+      + allow_stopping_for_update = true
+      + created_at                = (known after apply)
+      + folder_id                 = (known after apply)
+      + fqdn                      = (known after apply)
+      + hostname                  = (known after apply)
+      + id                        = (known after apply)
+      + metadata                  = {
+          + "ssh-keys" = <<-EOT
+                centos:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCylBPREkPhpTqSCTKbQ66TZlKvim7YsJe1JBnDqeQacxUAjSVUf0xS3cy/UwxYgHzzvXudwPiJ/k8TCWUyOb39NFteeXRzTc5jhFi3tCYMvdqfgXmdwD5BkaRtAiQph0d9MuVFOBypdzDV89ZR/C1eV4u0s/yUQ7pZCOprAUV01Q1SDpKDHLCy8S3Mceg73cYAiZ7PDAfNuuKWAS2i3mLklfa8wQBQQ/mxGjSTTJUQmpl3HioSgd86fPn5xTLsSbEGDZ630ujtb3QbRe8Dndi8uiq9kVugZ0CeUlxgDMgSBKG+MdICPh8W1qnXReu63WwfR9GH0faPEA3wmojkbFtNaPUnqjD8+/8D0EytTEclQvDXOD3jF0NV7uAzACp/9DITmxMDoqH+cMX9v1wE5TlkY47zQhu2gaI51fUM1WTWx76FtlO5l5yEK8L+sn46eNIkVPaOB03WlV816AX/= nik@ubuntuVM
+            EOT
+        }
+      + name                      = "srv-2"
+      + network_acceleration_type = "standard"
+      + platform_id               = "standard-v2"
+      + service_account_id        = (known after apply)
+      + status                    = (known after apply)
+      + zone                      = "ru-central1-a"
+
+      + boot_disk {
+          + auto_delete = true
+          + device_name = (known after apply)
+          + disk_id     = (known after apply)
+          + mode        = (known after apply)
+
+          + initialize_params {
+              + block_size  = (known after apply)
+              + description = (known after apply)
+              + image_id    = "fd84grruhvq2be8986bl"
+              + name        = (known after apply)
+              + size        = 20
+              + snapshot_id = (known after apply)
+              + type        = "nerwork-ssd"
+            }
+        }
+
+      + metadata_options {
+          + aws_v1_http_endpoint = (known after apply)
+          + aws_v1_http_token    = (known after apply)
+          + gce_http_endpoint    = (known after apply)
+          + gce_http_token       = (known after apply)
+        }
+
+      + network_interface {
+          + index              = (known after apply)
+          + ip_address         = (known after apply)
+          + ipv4               = true
+          + ipv6               = (known after apply)
+          + ipv6_address       = (known after apply)
+          + mac_address        = (known after apply)
+          + nat                = true
+          + nat_ip_address     = (known after apply)
+          + nat_ip_version     = (known after apply)
+          + security_group_ids = (known after apply)
+          + subnet_id          = (known after apply)
+        }
+
+      + placement_policy {
+          + host_affinity_rules = (known after apply)
+          + placement_group_id  = (known after apply)
+        }
+
+      + resources {
+          + core_fraction = 100
+          + cores         = 2
+          + memory        = 2
+        }
+
+      + scheduling_policy {
+          + preemptible = (known after apply)
+        }
+    }
+
+  # yandex_compute_instance.vm-test-new["db-1"] will be created
+  + resource "yandex_compute_instance" "vm-test-new" {
+      + created_at                = (known after apply)
+      + folder_id                 = (known after apply)
+      + fqdn                      = (known after apply)
+      + hostname                  = (known after apply)
+      + id                        = (known after apply)
+      + metadata                  = {
+          + "ssh-keys" = <<-EOT
+                centos:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCylBPREkPhpTqSCTKbQ66TZlKvim7YsJe1JBnDqeQacxUAjSVUf0xS3cy/UwxYgHzzvXudwPiJ/k8TCWUyOb39NFteeXRzTc5jhFi3tCYMvdqfgXmdwD5BkaRtAiQph0d9MuVFOBypdzDV89ZR/C1eV4u0s/yUQ7pZCOprAUV01Q1SDpKDHLCy8S3Mceg73cYAiZ7PDAfNuuKWAS2i3mLklfa8wQBQQ/mxGjSTTJUQmpl3HioSgd86fPn5xTLsSbEGDZ630ujtb3QbRe8Dndi8uiq9kVugZ0CeUlxgDMgSBKG+MdICPh8W1qnXReu63WwfR9GH0faPEA3wmojkbFtNaPUnqjD8+/8D0EytTEclQvDXOD3jF0NV7uAzACp/9DITmxMDoqH+cMX9v1wE5TlkY47zQhu2gaI51fUM1WTWx76FtlO5l5yEK8L+sn46eNIkVPaOB03WlV816AX/= nik@ubuntuVM
+            EOT
+        }
+      + name                      = "db-1"
+      + network_acceleration_type = "standard"
+      + platform_id               = "standard-v1"
+      + service_account_id        = (known after apply)
+      + status                    = (known after apply)
+      + zone                      = (known after apply)
+
+      + boot_disk {
+          + auto_delete = true
+          + device_name = (known after apply)
+          + disk_id     = (known after apply)
+          + mode        = (known after apply)
+
+          + initialize_params {
+              + block_size  = (known after apply)
+              + description = (known after apply)
+              + image_id    = "fd84grruhvq2be8986bl"
+              + name        = (known after apply)
+              + size        = 40
+              + snapshot_id = (known after apply)
+              + type        = "nerwork-ssd"
+            }
+        }
+
+      + metadata_options {
+          + aws_v1_http_endpoint = (known after apply)
+          + aws_v1_http_token    = (known after apply)
+          + gce_http_endpoint    = (known after apply)
+          + gce_http_token       = (known after apply)
+        }
+
+      + network_interface {
+          + index              = (known after apply)
+          + ip_address         = (known after apply)
+          + ipv4               = true
+          + ipv6               = (known after apply)
+          + ipv6_address       = (known after apply)
+          + mac_address        = (known after apply)
+          + nat                = true
+          + nat_ip_address     = (known after apply)
+          + nat_ip_version     = (known after apply)
+          + security_group_ids = (known after apply)
+          + subnet_id          = (known after apply)
+        }
+
+      + placement_policy {
+          + host_affinity_rules = (known after apply)
+          + placement_group_id  = (known after apply)
+        }
+
+      + resources {
+          + core_fraction = 100
+          + cores         = 2
+          + memory        = 4
+        }
+
+      + scheduling_policy {
+          + preemptible = (known after apply)
+        }
+    }
+
+  # yandex_compute_instance.vm-test-new["db-2"] will be created
+  + resource "yandex_compute_instance" "vm-test-new" {
+      + created_at                = (known after apply)
+      + folder_id                 = (known after apply)
+      + fqdn                      = (known after apply)
+      + hostname                  = (known after apply)
+      + id                        = (known after apply)
+      + metadata                  = {
+          + "ssh-keys" = <<-EOT
+                centos:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCylBPREkPhpTqSCTKbQ66TZlKvim7YsJe1JBnDqeQacxUAjSVUf0xS3cy/UwxYgHzzvXudwPiJ/k8TCWUyOb39NFteeXRzTc5jhFi3tCYMvdqfgXmdwD5BkaRtAiQph0d9MuVFOBypdzDV89ZR/C1eV4u0s/yUQ7pZCOprAUV01Q1SDpKDHLCy8S3Mceg73cYAiZ7PDAfNuuKWAS2i3mLklfa8wQBQQ/mxGjSTTJUQmpl3HioSgd86fPn5xTLsSbEGDZ630ujtb3QbRe8Dndi8uiq9kVugZ0CeUlxgDMgSBKG+MdICPh8W1qnXReu63WwfR9GH0faPEA3wmojkbFtNaPUnqjD8+/8D0EytTEclQvDXOD3jF0NV7uAzACp/9DITmxMDoqH+cMX9v1wE5TlkY47zQhu2gaI51fUM1WTWx76FtlO5l5yEK8L+sn46eNIkVPaOB03WlV816AX/= nik@ubuntuVM
+            EOT
+        }
+      + name                      = "db-2"
+      + network_acceleration_type = "standard"
+      + platform_id               = "standard-v1"
+      + service_account_id        = (known after apply)
+      + status                    = (known after apply)
+      + zone                      = (known after apply)
+
+      + boot_disk {
+          + auto_delete = true
+          + device_name = (known after apply)
+          + disk_id     = (known after apply)
+          + mode        = (known after apply)
+
+          + initialize_params {
+              + block_size  = (known after apply)
+              + description = (known after apply)
+              + image_id    = "fd84grruhvq2be8986bl"
+              + name        = (known after apply)
+              + size        = 40
+              + snapshot_id = (known after apply)
+              + type        = "nerwork-ssd"
+            }
+        }
+
+      + metadata_options {
+          + aws_v1_http_endpoint = (known after apply)
+          + aws_v1_http_token    = (known after apply)
+          + gce_http_endpoint    = (known after apply)
+          + gce_http_token       = (known after apply)
+        }
+
+      + network_interface {
+          + index              = (known after apply)
+          + ip_address         = (known after apply)
+          + ipv4               = true
+          + ipv6               = (known after apply)
+          + ipv6_address       = (known after apply)
+          + mac_address        = (known after apply)
+          + nat                = true
+          + nat_ip_address     = (known after apply)
+          + nat_ip_version     = (known after apply)
+          + security_group_ids = (known after apply)
+          + subnet_id          = (known after apply)
+        }
+
+      + placement_policy {
+          + host_affinity_rules = (known after apply)
+          + placement_group_id  = (known after apply)
+        }
+
+      + resources {
+          + core_fraction = 100
+          + cores         = 2
+          + memory        = 4
+        }
+
+      + scheduling_policy {
+          + preemptible = (known after apply)
+        }
+    }
+
+  # yandex_compute_instance.vm-test-new["web-1"] will be created
+  + resource "yandex_compute_instance" "vm-test-new" {
+      + created_at                = (known after apply)
+      + folder_id                 = (known after apply)
+      + fqdn                      = (known after apply)
+      + hostname                  = (known after apply)
+      + id                        = (known after apply)
+      + metadata                  = {
+          + "ssh-keys" = <<-EOT
+                centos:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCylBPREkPhpTqSCTKbQ66TZlKvim7YsJe1JBnDqeQacxUAjSVUf0xS3cy/UwxYgHzzvXudwPiJ/k8TCWUyOb39NFteeXRzTc5jhFi3tCYMvdqfgXmdwD5BkaRtAiQph0d9MuVFOBypdzDV89ZR/C1eV4u0s/yUQ7pZCOprAUV01Q1SDpKDHLCy8S3Mceg73cYAiZ7PDAfNuuKWAS2i3mLklfa8wQBQQ/mxGjSTTJUQmpl3HioSgd86fPn5xTLsSbEGDZ630ujtb3QbRe8Dndi8uiq9kVugZ0CeUlxgDMgSBKG+MdICPh8W1qnXReu63WwfR9GH0faPEA3wmojkbFtNaPUnqjD8+/8D0EytTEclQvDXOD3jF0NV7uAzACp/9DITmxMDoqH+cMX9v1wE5TlkY47zQhu2gaI51fUM1WTWx76FtlO5l5yEK8L+sn46eNIkVPaOB03WlV816AX/= nik@ubuntuVM
+            EOT
+        }
+      + name                      = "web-1"
+      + network_acceleration_type = "standard"
+      + platform_id               = "standard-v1"
+      + service_account_id        = (known after apply)
+      + status                    = (known after apply)
+      + zone                      = (known after apply)
+
+      + boot_disk {
+          + auto_delete = true
+          + device_name = (known after apply)
+          + disk_id     = (known after apply)
+          + mode        = (known after apply)
+
+          + initialize_params {
+              + block_size  = (known after apply)
+              + description = (known after apply)
+              + image_id    = "fd84grruhvq2be8986bl"
+              + name        = (known after apply)
+              + size        = 40
+              + snapshot_id = (known after apply)
+              + type        = "nerwork-ssd"
+            }
+        }
+
+      + metadata_options {
+          + aws_v1_http_endpoint = (known after apply)
+          + aws_v1_http_token    = (known after apply)
+          + gce_http_endpoint    = (known after apply)
+          + gce_http_token       = (known after apply)
+        }
+
+      + network_interface {
+          + index              = (known after apply)
+          + ip_address         = (known after apply)
+          + ipv4               = true
+          + ipv6               = (known after apply)
+          + ipv6_address       = (known after apply)
+          + mac_address        = (known after apply)
+          + nat                = true
+          + nat_ip_address     = (known after apply)
+          + nat_ip_version     = (known after apply)
+          + security_group_ids = (known after apply)
+          + subnet_id          = (known after apply)
+        }
+
+      + placement_policy {
+          + host_affinity_rules = (known after apply)
+          + placement_group_id  = (known after apply)
+        }
+
+      + resources {
+          + core_fraction = 100
+          + cores         = 2
+          + memory        = 4
+        }
+
+      + scheduling_policy {
+          + preemptible = (known after apply)
+        }
+    }
+
+  # yandex_compute_instance.vm-test-new["web-2"] will be created
+  + resource "yandex_compute_instance" "vm-test-new" {
+      + created_at                = (known after apply)
+      + folder_id                 = (known after apply)
+      + fqdn                      = (known after apply)
+      + hostname                  = (known after apply)
+      + id                        = (known after apply)
+      + metadata                  = {
+          + "ssh-keys" = <<-EOT
+                centos:ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCylBPREkPhpTqSCTKbQ66TZlKvim7YsJe1JBnDqeQacxUAjSVUf0xS3cy/UwxYgHzzvXudwPiJ/k8TCWUyOb39NFteeXRzTc5jhFi3tCYMvdqfgXmdwD5BkaRtAiQph0d9MuVFOBypdzDV89ZR/C1eV4u0s/yUQ7pZCOprAUV01Q1SDpKDHLCy8S3Mceg73cYAiZ7PDAfNuuKWAS2i3mLklfa8wQBQQ/mxGjSTTJUQmpl3HioSgd86fPn5xTLsSbEGDZ630ujtb3QbRe8Dndi8uiq9kVugZ0CeUlxgDMgSBKG+MdICPh8W1qnXReu63WwfR9GH0faPEA3wmojkbFtNaPUnqjD8+/8D0EytTEclQvDXOD3jF0NV7uAzACp/9DITmxMDoqH+cMX9v1wE5TlkY47zQhu2gaI51fUM1WTWx76FtlO5l5yEK8L+sn46eNIkVPaOB03WlV816AX/= nik@ubuntuVM
+            EOT
+        }
+      + name                      = "web-2"
+      + network_acceleration_type = "standard"
+      + platform_id               = "standard-v1"
+      + service_account_id        = (known after apply)
+      + status                    = (known after apply)
+      + zone                      = (known after apply)
+
+      + boot_disk {
+          + auto_delete = true
+          + device_name = (known after apply)
+          + disk_id     = (known after apply)
+          + mode        = (known after apply)
+
+          + initialize_params {
+              + block_size  = (known after apply)
+              + description = (known after apply)
+              + image_id    = "fd84grruhvq2be8986bl"
+              + name        = (known after apply)
+              + size        = 40
+              + snapshot_id = (known after apply)
+              + type        = "nerwork-ssd"
+            }
+        }
+
+      + metadata_options {
+          + aws_v1_http_endpoint = (known after apply)
+          + aws_v1_http_token    = (known after apply)
+          + gce_http_endpoint    = (known after apply)
+          + gce_http_token       = (known after apply)
+        }
+
+      + network_interface {
+          + index              = (known after apply)
+          + ip_address         = (known after apply)
+          + ipv4               = true
+          + ipv6               = (known after apply)
+          + ipv6_address       = (known after apply)
+          + mac_address        = (known after apply)
+          + nat                = true
+          + nat_ip_address     = (known after apply)
+          + nat_ip_version     = (known after apply)
+          + security_group_ids = (known after apply)
+          + subnet_id          = (known after apply)
+        }
+
+      + placement_policy {
+          + host_affinity_rules = (known after apply)
+          + placement_group_id  = (known after apply)
+        }
+
+      + resources {
+          + core_fraction = 100
+          + cores         = 2
+          + memory        = 4
+        }
+
+      + scheduling_policy {
+          + preemptible = (known after apply)
+        }
+    }
+
+  # yandex_vpc_network.network_terraform will be created
+  + resource "yandex_vpc_network" "network_terraform" {
+      + created_at                = (known after apply)
+      + default_security_group_id = (known after apply)
+      + folder_id                 = (known after apply)
+      + id                        = (known after apply)
+      + labels                    = (known after apply)
+      + name                      = "net_terraform"
+      + subnet_ids                = (known after apply)
+    }
+
+  # yandex_vpc_subnet.subnet_terraform will be created
+  + resource "yandex_vpc_subnet" "subnet_terraform" {
+      + created_at     = (known after apply)
+      + folder_id      = (known after apply)
+      + id             = (known after apply)
+      + labels         = (known after apply)
+      + name           = "sub_terraform"
+      + network_id     = (known after apply)
+      + v4_cidr_blocks = [
+          + "192.168.15.0/24",
+        ]
+      + v6_cidr_blocks = (known after apply)
+      + zone           = "ru-central1-a"
+    }
+
+Plan: 8 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + external_ip_address_vm-test_yandex_cloud = [
+      + [
+          + (known after apply),
+        ],
+      + [
+          + (known after apply),
+        ],
+    ]
+  + internal_ip_address_vm-test_yandex_cloud = [
+      + [
+          + (known after apply),
+        ],
+      + [
+          + (known after apply),
+        ],
+    ]
+```
 
 ---
