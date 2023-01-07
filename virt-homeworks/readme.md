@@ -2904,7 +2904,9 @@ Changes to Outputs:
 1. Надо запускать планирование и аплай для двух воркспейсов `stage` и `prod`.
 1. Необходимо включить автопланирование при изменении любых файлов `*.tf`.
 
-В качестве результата приложите ссылку на файлы `server.yaml` и `atlantis.yaml`.
+В качестве результата приложите ссылку на файлы `server.yaml` и `atlantis.yaml`:
+[config-files](https://github.com/nikolay480/devops-netology/tree/main/terraform/atlantis)
+
 
 </details>
 
@@ -2920,7 +2922,8 @@ Changes to Outputs:
 3. В рамках предпоследнего задания был создан ec2 при помощи ресурса `aws_instance`. 
 Создайте аналогичный инстанс при помощи найденного модуля.   
 
-В качестве результата задания приложите ссылку на созданный блок конфигураций. 
+В качестве результата задания приложите ссылку на созданный блок конфигураций:
+[terraform-repo](https://github.com/nikolay480/devops-netology/tree/main/terraform/7.4%20modules)
 
 </details>
 
