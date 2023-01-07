@@ -1,0 +1,21 @@
+repos:
+  - id: https://github.com/nikolay480/*
+    branch: /production/
+    apply_requirements: [approved, mergeable]
+    workflow: default
+    allowed_overrides: [apply_requirements, workflow]
+    allowed_workflows: [myworkflow]
+    allow_custom_workflows: true
+
+# workflows lists server-side custom workflows
+workflows:
+  default:
+    plan:
+      steps:
+        - init
+        - plan:
+            extra_args: ["-lock", "false"]
+    apply:
+      steps:
+        - apply
+

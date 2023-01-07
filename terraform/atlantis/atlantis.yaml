@@ -1,0 +1,12 @@
+version: 3
+projects:
+- dir: my-netology-project
+  workspace: staging
+  autoplan:
+    when_modified: ["../modules/**/*.tf", "*.tf*"]
+    enabled: true
+- dir:  my-netology-project
+  workspace: production
+  autoplan:
+    when_modified: ["../modules/**/*.tf", "*.tf*"]
+    enabled: true
