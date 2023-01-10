@@ -2937,10 +2937,10 @@ Changes to Outputs:
 
 # Домашнее задание к занятию "7.5. Основы golang"
 
-С `golang` в рамках курса, мы будем работать не много, поэтому можно использовать любой IDE. 
-Но рекомендуем ознакомиться с [GoLand](https://www.jetbrains.com/ru-ru/go/).  
 
 ## Задача 1. Установите golang.
+
+<details>
 1. Воспользуйтесь инструкций с официального сайта: [https://golang.org/](https://golang.org/).
 2. Так же для тестирования кода можно использовать песочницу: [https://play.golang.org/](https://play.golang.org/).
 
@@ -2953,8 +2953,12 @@ root@ubuntuVM:/home/nik/Downloads# export PATH=$PATH:/usr/local/go/bin
 root@ubuntuVM:/home/nik/Downloads# go version
 go version go1.19.4 linux/amd64
 ```
+</details>
 
 ## Задача 2. Знакомство с gotour.
+
+<details>
+
 У Golang есть обучающая интерактивная консоль [https://tour.golang.org/](https://tour.golang.org/). 
 Рекомендуется изучить максимальное количество примеров. В консоли уже написан необходимый код, 
 осталось только с ним ознакомиться и поэкспериментировать как написано в инструкции в левой части экрана.  
@@ -2962,8 +2966,12 @@ go version go1.19.4 linux/amd64
 ## Ответ
 Ознакомился с `tour of the Go programming language`
 
+</details>
 
 ## Задача 3. Написание кода. 
+
+<details>
+
 Цель этого задания закрепить знания о базовом синтаксисе языка. Можно использовать редактор кода 
 на своем компьютере, либо использовать песочницу: [https://play.golang.org/](https://play.golang.org/).
 
@@ -3063,6 +3071,7 @@ func main() {
 $: go run main.go
 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 48 51 54 57 60 63 66 69 72 75 78 81 84 87 90 93 96 99 
 ```
+</details>
 
 
 ---
