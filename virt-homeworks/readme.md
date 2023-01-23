@@ -3011,7 +3011,7 @@ func main() {
 	fmt.Println(input, "meters is", output, "feets")
 }
 ```
-```bash
+```go
 $: go run main.go
 Enter the distance in meters: 10
 10 meters is 3.048 feets
@@ -3097,7 +3097,7 @@ $: go run main.go
 
 2. Для создания очереди сообщений SQS используется ресурс `aws_sqs_queue` у которого есть параметр `name`. 
     * С каким другим параметром конфликтует `name`? Приложите строчку кода, в которой это указано.
-> Rонфликтует с параметром ["name_prefix"](https://github.com/hashicorp/terraform-provider-aws/blob/1092267d84a47daadc69dadba6c5404cb4b173ce/internal/service/sqs/queue.go#L88)
+> Конфликтует с параметром ["name_prefix"](https://github.com/hashicorp/terraform-provider-aws/blob/1092267d84a47daadc69dadba6c5404cb4b173ce/internal/service/sqs/queue.go#L88)
    
    ```yaml
    "name": {
