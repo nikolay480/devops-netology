@@ -3072,6 +3072,57 @@ $: go run main.go
 3 6 9 12 15 18 21 24 27 30 33 36 39 42 45 48 51 54 57 60 63 66 69 72 75 78 81 84 87 90 93 96 99 
 ```
 </details>
+---
+
+# Домашнее задание к занятию "7.6. Написание собственных провайдеров для Terraform."
+Бывает, что 
+* общедоступная документация по терраформ ресурсам не всегда достоверна,
+* в документации не хватает каких-нибудь правил валидации или неточно описаны параметры,
+* понадобиться использовать провайдер без официальной документации,
+* может возникнуть необходимость написать свой провайдер для системы используемой в ваших проектах.   
+
+## Задача 1.
+<details>
+Давайте потренируемся читать исходный код AWS провайдера, который можно склонировать от сюда: 
+[https://github.com/hashicorp/terraform-provider-aws.git](https://github.com/hashicorp/terraform-provider-aws.git).
+Просто найдите нужные ресурсы в исходном коде и ответы на вопросы станут понятны.  
 
 
+1. Найдите, где перечислены все доступные `resource` и `data_source`, приложите ссылку на эти строки в коде на 
+гитхабе. 
+
+[resource](https://github.com/hashicorp/terraform-provider-aws/blob/1092267d84a47daadc69dadba6c5404cb4b173ce/internal/provider/provider.go#L419)
+
+[data_source](https://github.com/hashicorp/terraform-provider-aws/blob/1092267d84a47daadc69dadba6c5404cb4b173ce/internal/provider/provider.go#L944)
+
+2. Для создания очереди сообщений SQS используется ресурс `aws_sqs_queue` у которого есть параметр `name`. 
+    * С каким другим параметром конфликтует `name`? Приложите строчку кода, в которой это указано.
+> Rонфликтует с параметром ["name_prefix"](https://github.com/hashicorp/terraform-provider-aws/blob/1092267d84a47daadc69dadba6c5404cb4b173ce/internal/service/sqs/queue.go#L88)
+   
+   ```yaml
+   "name": {
+			Type:          schema.TypeString,
+			Optional:      true,
+			Computed:      true,
+			ForceNew:      true,
+			ConflictsWith: []string{"name_prefix"},
+   ```
+
+    * Какая максимальная длина имени? 
+>75 символов для файлов с расширением .fifo
+
+>80 символов для обычных имен
+   
+
+    * Какому регулярному выражению должно подчиняться имя? 
+
+```go
+  if fifoQueue {
+	re = regexp.MustCompile(`^[a-zA-Z0-9_-]{1,75}\.fifo$`)
+	} 
+  else {
+	re = regexp.MustCompile(`^[a-zA-Z0-9_-]{1,80}$`)
+	}
+   ```
+</details>
 ---
