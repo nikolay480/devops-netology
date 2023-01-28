@@ -179,8 +179,6 @@ winrm                       Run tasks over Microsoft's WinRM
 ```
 Исходя из описания наиболее подходит плагин `local`. Этот плагин подключения позволяет `ansible` выполнять задачи на `‘контроллере’ Ansible`, а не на удаленном хосте.
 
-Параметры
-
 
 12. В `prod.yml` добавьте новую группу хостов с именем  `local`, в ней разместите localhost с необходимым типом подключения.
 ```yaml
@@ -233,10 +231,156 @@ ubuntu                     : ok=3    changed=0    unreachable=0    failed=0    s
 ## Необязательная часть
 
 1. При помощи `ansible-vault` расшифруйте все зашифрованные файлы с переменными.
+
+```bash
+nik@ubuntuVM:~/netology/ansible/lesson_08_01/playbook$ ansible-vault decrypt group_vars/deb/examp.yml
+Vault password: 
+Decryption successful
+nik@ubuntuVM:~/netology/ansible/lesson_08_01/playbook$ ansible-vault decrypt group_vars/el/examp.yml
+Vault password: 
+Decryption successful
+nik@ubuntuVM:~/netology/ansible/lesson_08_01/playbook$ 
+```
+
 2. Зашифруйте отдельное значение `PaSSw0rd` для переменной `some_fact` паролем `netology`. Добавьте полученное значение в `group_vars/all/exmp.yml`.
+```bash
+nik@ubuntuVM:~/netology/ansible/lesson_08_01/playbook$ ansible-vault encrypt_string
+New Vault password: 
+Confirm New Vault password: 
+Reading plaintext input from stdin. (ctrl-d to end input, twice if your content does not already have a newline)
+PaSSw0rd      
+!vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          39353564393339383063396661326263616266356665343530383239636564373432663933363064
+          3734663038613037343333313633626536613737316665320a653932643338623733326332633032
+          36313930626362366161326261373236316536396539643132343661656632333264616433323935
+          6338616238316633360a643933613539323462313335613335356433303636373739663332383965
+          3965
+Encryption successful
+```
+Заменим значение в файле [./playbook/group_vars/all/exmp.yml](./playbook/group_vars/all/exmp.yml)
+```yaml
+---
+  some_fact: vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          39353564393339383063396661326263616266356665343530383239636564373432663933363064
+          3734663038613037343333313633626536613737316665320a653932643338623733326332633032
+          36313930626362366161326261373236316536396539643132343661656632333264616433323935
+          6338616238316633360a643933613539323462313335613335356433303636373739663332383965
+          3965
+```
 3. Запустите `playbook`, убедитесь, что для нужных хостов применился новый `fact`.
+```bash
+ik@ubuntuVM:~/netology/ansible/lesson_08_01/playbook$ ansible-playbook -i inventory/prod.yml site.yml --ask-vault-pass
+Vault password: 
+
+PLAY [Print os facts] ******************************************************************************************************************************************************************
+
+TASK [Gathering Facts] *****************************************************************************************************************************************************************
+ok: [localhost]
+ok: [ubuntu]
+ok: [centos7]
+
+TASK [Print OS] ************************************************************************************************************************************************************************
+ok: [ubuntu] => {
+    "msg": "Ubuntu"
+}
+ok: [centos7] => {
+    "msg": "CentOS"
+}
+ok: [localhost] => {
+    "msg": "Ubuntu"
+}
+
+TASK [Print fact] **********************************************************************************************************************************************************************
+ok: [centos7] => {
+    "msg": "el default fact"
+}
+ok: [ubuntu] => {
+    "msg": "deb default fact"
+}
+ok: [localhost] => {
+    "msg": "vault | $ANSIBLE_VAULT;1.1;AES256 39353564393339383063396661326263616266356665343530383239636564373432663933363064 3734663038613037343333313633626536613737316665320a653932643338623733326332633032 36313930626362366161326261373236316536396539643132343661656632333264616433323935 6338616238316633360a643933613539323462313335613335356433303636373739663332383965 3965"
+}
+
+PLAY RECAP *****************************************************************************************************************************************************************************
+centos7                    : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+ubuntu                     : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+```
 4. Добавьте новую группу хостов `fedora`, самостоятельно придумайте для неё переменную. В качестве образа можно использовать [этот](https://hub.docker.com/r/pycontribs/fedora).
+```yaml
+fed:
+    hosts:
+      fedora:
+        ansible_connection: docker
+```
 5. Напишите скрипт на bash: автоматизируйте поднятие необходимых контейнеров, запуск ansible-playbook и остановку контейнеров.
-6. Все изменения должны быть зафиксированы и отправлены в вашей личный репозиторий.
+
+Создадим скрипт [script](./script.sh).
+
+Сделаем файл исполняемым:
+
+```bash
+nik@ubuntuVM:~/netology/ansible/lesson_08_01$ chmod +x ./script.sh
+```
+Запустим:
+
+```bash
+nik@ubuntuVM:~/netology/ansible/lesson_08_01$ ./script.sh
+Running containers in docker...
+54f269ed54e63ef9d58a2136b88025edd9c47b39e53f415ddd77a7d317063b96
+1fd0981eaf4e0a9957c27ec6e0a6b89e98954df300f7fd4082ccbab59f90e329
+c8af1352b7d40c10e49b28acaf3803c0e8ff4c5fcd2fc49bac5947a641315869
+Running ansible-playbook...
+Vault password: 
+
+PLAY [Print os facts] ****************************************************************************************************************************************************
+
+TASK [Gathering Facts] ***************************************************************************************************************************************************
+ok: [fedora]
+ok: [localhost]
+ok: [ubuntu]
+ok: [centos7]
+
+TASK [Print OS] **********************************************************************************************************************************************************
+ok: [centos7] => {
+    "msg": "CentOS"
+}
+ok: [localhost] => {
+    "msg": "Ubuntu"
+}
+ok: [ubuntu] => {
+    "msg": "Ubuntu"
+}
+ok: [fedora] => {
+    "msg": "Fedora"
+}
+
+TASK [Print fact] ********************************************************************************************************************************************************
+ok: [centos7] => {
+    "msg": "el default fact"
+}
+ok: [ubuntu] => {
+    "msg": "deb default fact"
+}
+ok: [localhost] => {
+    "msg": "vault | $ANSIBLE_VAULT;1.1;AES256 39353564393339383063396661326263616266356665343530383239636564373432663933363064 3734663038613037343333313633626536613737316665320a653932643338623733326332633032 36313930626362366161326261373236316536396539643132343661656632333264616433323935 6338616238316633360a643933613539323462313335613335356433303636373739663332383965 3965"
+}
+ok: [fedora] => {
+    "msg": "vault | $ANSIBLE_VAULT;1.1;AES256 39353564393339383063396661326263616266356665343530383239636564373432663933363064 3734663038613037343333313633626536613737316665320a653932643338623733326332633032 36313930626362366161326261373236316536396539643132343661656632333264616433323935 6338616238316633360a643933613539323462313335613335356433303636373739663332383965 3965"
+}
+
+PLAY RECAP ***************************************************************************************************************************************************************
+centos7                    : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+fedora                     : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+ubuntu                     : ok=3    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+
+Stopping containers ...
+fedora
+ubuntu
+centos7
+```
 
 ---
