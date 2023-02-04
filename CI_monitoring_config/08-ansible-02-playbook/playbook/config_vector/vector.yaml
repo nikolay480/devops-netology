@@ -4,7 +4,7 @@ sources:
     type: file
     ignore_older_secs: 600
     include:
-      - /var/log/clickhouse/clickhouse-server.log
+      - /var/log/yum.log
     read_from: beginning
 
 sinks:
@@ -16,10 +16,6 @@ sinks:
     database: logs
     table: mytable
 
-
-# Vector's GraphQL API (disabled by default)
-# Uncomment to try it out with the `vector top` command or
-# in your browser at http://localhost:8686
-# [api]
-# enabled = true
-# address = "127.0.0.1:8686"
+# address = "127.0.0.1:8686
+# Change this to use a non-default directory for Vector data storage:
+# data_dir = "/var/lib/vector"

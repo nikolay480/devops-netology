@@ -2,15 +2,13 @@
 - name: Install Clickhouse
   #user: centos
   hosts: clickhouse
-
+  tags: clickhouse
   handlers:
     - name: Start clickhouse service
       become: true
       ansible.builtin.service:
         name: clickhouse-server
         state: restarted
-
-
   tasks:
     - block:
         - name: Get clickhouse distrib
@@ -23,7 +21,6 @@
           ansible.builtin.get_url:
             url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-{{ clickhouse_version }}.x86_64.rpm"
             dest: "./clickhouse-common-static-{{ clickhouse_version }}.rpm"
-
     - name: Install clickhouse packages
       become: true
       ansible.builtin.yum:
@@ -32,64 +29,49 @@
           - clickhouse-client-{{ clickhouse_version }}.rpm
           - clickhouse-server-{{ clickhouse_version }}.rpm
       notify: Start clickhouse service
-
     - name: Flush handler
       meta: flush_handlers
-
     - name: Create database
       become: true
       ansible.builtin.command: "clickhouse-client --query 'CREATE DATABASE logs;'"
       register: create_db
       failed_when: create_db.rc != 0 and create_db.rc !=82
       changed_when: create_db.rc == 0
-
     - name: Create table
       become: true
-      ansible.builtin.command: "clickhouse-client --query 'CREATE TABLE IF NOT EXISTS logs.mytable ('file' String, 'hosts' String, 'message' String, 'timestamp' Date) ENGINE = Log;'"
+      ansible.builtin.command: "clickhouse-client --query 'CREATE TABLE IF NOT EXISTS logs.mytable
+        ('timestamp' Date, 'status' String, 'message' String) ENGINE = Log;'"
       register: create_table
-
 - name: Install Vector
   hosts: vector
-
-  handlers:
-  - name: Restart vector service
-    become: true
-    ansible.builtin.systemd:
-      name: vector
-      state: restarted
-      daemon_reload: true
-
+  tags: vector
   tasks:
     - name: Creates directory tmp/vector/
       become: true
       file:
         path: /tmp/vector/
         state: directory
-
     - name: Get vector
       become: true
       ansible.builtin.get_url:
-        url: "https://packages.timber.io/vector/0.27.0/vector-0.27.0-1.{{arch}}.rpm"
+        url: "https://packages.timber.io/vector/0.27.0/vector-0.27.0-1.{{ arch }}.rpm"
         dest: "/tmp/vector/vector-0.27.0-1.{{ arch }}.rpm"
-
     - name: install vector
       become: true
       become_user: root
       ansible.builtin.yum:
         name: "/tmp/vector/vector-0.27.0-1.{{ arch }}.rpm"
-
-
-    - name: VECTOR CONFIGURE | Config
+    - name: Copy config
       become: true
       ansible.builtin.copy:
         src: ./vector_config/vector.yaml
         dest: /etc/vector/vector.yaml
         owner: root
         group: root
-        mode: '777'
-
-    - name: VECTOR CONFIGURE | change configuration file
+        mode: '775'
+    - name: Restart vector service
       become: true
-      become_user: root
-      command: "vector --config /etc/vector/vector.yaml"
-      notify: Restart vector service
+      ansible.builtin.systemd:
+        name: vector
+        state: restarted
+        daemon_reload: true
