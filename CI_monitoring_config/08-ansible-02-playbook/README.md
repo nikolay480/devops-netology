@@ -95,7 +95,7 @@ site1.yml:68
 site1.yml:77
 Task/Handler: change configuration file
 ```
-ошибки устранены, в основном это лишние пробелы в конце строки `(Trailing whitespace)`
+Ошибки устранены, в основном это лишние пробелы в конце строки `(Trailing whitespace)`
 6. Попробуйте запустить `playbook` на этом окружении с флагом `--check`.
 ```bash
 nik@ubuntuVM:~/netology/ansible/lesson_08_02/playbook$ ansible-playbook -i inventory/prod.yml site1.yml --user centos --check
@@ -204,7 +204,7 @@ centos7                    : ok=11   changed=2    unreachable=0    failed=0    s
 Повторный запуск дает полностью аналогичный вывод, следовательно, можно говорить об` идемпотентности` playbook.
 
 9. Подготовьте README.md файл по своему playbook. В нём должно быть описано: что делает playbook, какие у него есть
-   параметры и теги.
+   параметры и теги: [readme.md](./playbook/readme.md)
 
 10. Готовый playbook выложите в свой репозиторий, поставьте тег `08-ansible-02-playbook` на фиксирующий коммит, в ответ
     предоставьте ссылку на него: [playbook](./playbook)
