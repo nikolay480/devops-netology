@@ -1,0 +1,107 @@
+---
+- name: Install Clickhouse
+  #user: centos
+  hosts: clickhouse
+
+  handlers:
+    - name: Start clickhouse service
+      become: true
+      ansible.builtin.service:
+        name: clickhouse-server
+        state: restarted
+
+
+  tasks:
+    - block:
+        - name: Get clickhouse distrib
+          ansible.builtin.get_url:
+            url: "https://packages.clickhouse.com/rpm/stable/{{ item }}-{{ clickhouse_version }}.noarch.rpm"
+            dest: "./{{ item }}-{{ clickhouse_version }}.rpm"
+          with_items: "{{ clickhouse_packages }}"
+      rescue:
+        - name: Get clickhouse distrib
+          ansible.builtin.get_url:
+            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-{{ clickhouse_version }}.x86_64.rpm"
+            dest: "./clickhouse-common-static-{{ clickhouse_version }}.rpm"
+
+    - name: Install clickhouse packages
+      become: true
+      ansible.builtin.yum:
+        name:
+          - clickhouse-common-static-{{ clickhouse_version }}.rpm
+          - clickhouse-client-{{ clickhouse_version }}.rpm
+          - clickhouse-server-{{ clickhouse_version }}.rpm
+      notify: Start clickhouse service
+
+    - name: Flush handler
+      meta: flush_handlers
+
+    - name: Create database
+      become: true
+      ansible.builtin.command: "clickhouse-client --query 'CREATE DATABASE logs;'"
+      register: create_db
+      failed_when: create_db.rc != 0 and create_db.rc !=82
+      changed_when: create_db.rc == 0
+
+    - name: Create table
+      become: true
+      ansible.builtin.command: "clickhouse-client --query 'CREATE TABLE IF NOT EXISTS logs.mytable (message String) ENGINE = MergeTree() ORDER BY tuple();'"
+      register: create_table
+
+- name: Install Vector
+  hosts: vector
+
+  handlers:
+  - name: Start vector service
+    become: true
+    ansible.builtin.service:
+      name: vector
+      state: restarted
+
+  tasks:
+    - name: Creates directory tmp/vector/
+      become: true
+      file:
+        path: /tmp/vector/
+        state: directory
+
+    - name: Creates directory etc/vector/
+      become: true
+      file:
+        path: /etc/vector/
+        state: directory
+
+    - name: Get vector tar.gz
+      become: true
+      ansible.builtin.get_url:
+        url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-x86_64-unknown-linux-musl.tar.gz"
+        dest: /tmp/vector/vector-{{ vector_version }}.tar.gz
+        mode: '777'
+
+    - name: Extract vector to /etc/vector
+      become: true
+      become_user: root
+      ansible.builtin.unarchive:
+        src: /tmp/vector/vector-{{ vector_version }}.tar.gz
+        dest: /etc/vector
+        remote_src: yes
+
+    - name: Add to path
+      become: true
+      become_user: root
+      ansible.builtin.command: 'echo "export PATH=\"/etc/vector/vector-x86_64-unknown-linux-musl/bin:\$PATH\"" >> $HOME/.profile && source /root/.profile'
+
+    - name: VECTOR CONFIGURE | Config
+      become: true
+      ansible.builtin.copy:
+        src: ./vector_config/vector.toml
+        dest: /etc/vector/vector.toml
+        owner: root
+        group: root
+        mode: '777'
+
+    - name: VECTOR CONFIGURE | change configuration file
+      become: true
+      become_user: root
+      command: "vector --config /etc/vector/vector.toml"
+      notify: Start vector service
