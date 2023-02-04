@@ -45,18 +45,19 @@
 
     - name: Create table
       become: true
-      ansible.builtin.command: "clickhouse-client --query 'CREATE TABLE IF NOT EXISTS logs.mytable (message String) ENGINE = MergeTree() ORDER BY tuple();'"
+      ansible.builtin.command: "clickhouse-client --query 'CREATE TABLE IF NOT EXISTS logs.mytable ('file' String, 'hosts' String, 'message' String, 'timestamp' Date) ENGINE = Log;'"
       register: create_table
 
 - name: Install Vector
   hosts: vector
 
   handlers:
-  - name: Start vector service
+  - name: Restart vector service
     become: true
-    ansible.builtin.service:
+    ansible.builtin.systemd:
       name: vector
       state: restarted
+      daemon_reload: true
 
   tasks:
     - name: Creates directory tmp/vector/
@@ -69,6 +70,12 @@
       become: true
       file:
         path: /etc/vector/
+        state: directory
+
+    - name: Creates directory var/lib/vector/
+      become: true
+      file:
+        path: /var/lib/vector/
         state: directory
 
     - name: Get vector tar.gz
@@ -86,16 +93,23 @@
         dest: /etc/vector
         remote_src: yes
 
-    - name: Add to path
+    - name: Add to path 1
       become: true
       become_user: root
-      ansible.builtin.command: 'echo "export PATH=\"/etc/vector/vector-x86_64-unknown-linux-musl/bin:\$PATH\"" >> $HOME/.profile && source /root/.profile'
+      ansible.builtin.copy:
+        content: export PATH=\"/etc/vector/vector-x86_64-unknown-linux-musl/bin:\$PATH\"
+        dest: $HOME/.profile"
+
+    - name: Add to path 2
+      become: true
+      become_user: root
+      ansible.builtin.shell: "source /root/.profile"
 
     - name: VECTOR CONFIGURE | Config
       become: true
       ansible.builtin.copy:
-        src: ./vector_config/vector.toml
-        dest: /etc/vector/vector.toml
+        src: ./vector_config/vector.yaml
+        dest: /etc/vector/vector.yaml
         owner: root
         group: root
         mode: '777'
@@ -103,5 +117,5 @@
     - name: VECTOR CONFIGURE | change configuration file
       become: true
       become_user: root
-      command: "vector --config /etc/vector/vector.toml"
-      notify: Start vector service
+      command: "vector --config /etc/vector/vector.yaml"
+      notify: Restart vector service

@@ -1,0 +1,25 @@
+---
+sources:
+  my_source:
+    type: file
+    ignore_older_secs: 600
+    include:
+      - /var/log/clickhouse/clickhouse-server.log
+    read_from: beginning
+
+sinks:
+  my_sink:
+    type: clickhouse
+    inputs:
+      - my_source
+    endpoint: http://62.84.115.223:8123
+    database: logs
+    table: mytable
+
+
+# Vector's GraphQL API (disabled by default)
+# Uncomment to try it out with the `vector top` command or
+# in your browser at http://localhost:8686
+# [api]
+# enabled = true
+# address = "127.0.0.1:8686"
