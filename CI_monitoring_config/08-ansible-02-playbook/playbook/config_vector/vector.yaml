@@ -12,7 +12,7 @@ sinks:
     type: clickhouse
     inputs:
       - my_source
-    endpoint: http://62.84.115.223:8123
+    endpoint: http://158.160.56.198:8123
     database: logs
     table: mytable
 

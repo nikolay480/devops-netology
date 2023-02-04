@@ -66,44 +66,18 @@
         path: /tmp/vector/
         state: directory
 
-    - name: Creates directory etc/vector/
-      become: true
-      file:
-        path: /etc/vector/
-        state: directory
-
-    - name: Creates directory var/lib/vector/
-      become: true
-      file:
-        path: /var/lib/vector/
-        state: directory
-
-    - name: Get vector tar.gz
+    - name: Get vector
       become: true
       ansible.builtin.get_url:
-        url: "https://packages.timber.io/vector/{{ vector_version }}/vector-{{ vector_version }}-x86_64-unknown-linux-musl.tar.gz"
-        dest: /tmp/vector/vector-{{ vector_version }}.tar.gz
-        mode: '777'
+        url: "https://packages.timber.io/vector/0.27.0/vector-0.27.0-1.{{arch}}.rpm"
+        dest: "/tmp/vector/vector-0.27.0-1.{{ arch }}.rpm"
 
-    - name: Extract vector to /etc/vector
+    - name: install vector
       become: true
       become_user: root
-      ansible.builtin.unarchive:
-        src: /tmp/vector/vector-{{ vector_version }}.tar.gz
-        dest: /etc/vector
-        remote_src: yes
+      ansible.builtin.yum:
+        name: "/tmp/vector/vector-0.27.0-1.{{ arch }}.rpm"
 
-    - name: Add to path 1
-      become: true
-      become_user: root
-      ansible.builtin.copy:
-        content: export PATH=\"/etc/vector/vector-x86_64-unknown-linux-musl/bin:\$PATH\"
-        dest: $HOME/.profile"
-
-    - name: Add to path 2
-      become: true
-      become_user: root
-      ansible.builtin.shell: "source /root/.profile"
 
     - name: VECTOR CONFIGURE | Config
       become: true
