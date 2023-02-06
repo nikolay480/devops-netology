@@ -4,7 +4,7 @@
 
 1. Подготовьте в Yandex Cloud три хоста: для `clickhouse`, для `vector` и для `lighthouse`.
 
-Используя `terraform `развернем в YandexCloud 3 хоста, внесем полученные IP d инвентори-файл` prod.yml`
+Используя `terraform `развернем в YandexCloud 3 хоста, внесем полученные IP в инвентори-файл` prod.yml`
 Содержание terraform-файлов опустим, так как разбирались ранее,
 например [тут](https://github.com/nikolay480/devops-netology/tree/main/terraform).
 
@@ -140,7 +140,6 @@ false, "dest": "./clickhouse-common-static-22.3.3.44.rpm", "elapsed":
         246310036, "state": "file", "status_code":
           404, "uid":
              1000, "url": "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-22.3.3.44.noarch.rpm" }
-
   TASK [Get clickhouse distrib] ******************************************************************************
 ok: [ clickhouse-1 ]
 
@@ -219,18 +218,16 @@ nik@ubuntuVM:~/netology/ansible/lesson_08_03/playbook$ ansible-playbook -i inven
   TASK [Gathering Facts] *************************************************************************************
 ok: [ clickhouse-1 ]
 
-      TASK [Get clickhouse distrib] ******************************************************************************
+  TASK [Get clickhouse distrib] ******************************************************************************
 ok: [ clickhouse-1 ] => (item=clickhouse-client)
 ok: [ clickhouse-1 ] => (item=clickhouse-server)
-failed: [ clickhouse-1 ] (item=clickhouse-common-static) => {"ansible_loop_var": "item", "changed":
-                                                                                           false, "dest": "./clickhouse-common-static-22.3.3.44.rpm", "elapsed":
-                                                                                                                                                        0, "gid":
-                                                                                                                                                          1000, "group": "centos", "item": "clickhouse-common-static", "mode": "0664", "msg": "Request failed", "owner": "centos", "response": "HTTP Error 404: Not Found", "secontext": "unconfined_u:object_r:user_home_t:s0", "size":
-                                                                                                                                                                                                                                                                                                                                                                                   246310036, "state": "file", "status_code":
-                                                                                                                                                                                                                                                                                                                                                                                                                 404, "uid":
-                                                                                                                                                                                                                                                                                                                                                                                                                   1000, "url": "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-22.3.3.44.noarch.rpm" }
-
-                                                                                   TASK [Get clickhouse distrib] ******************************************************************************
+failed: [ clickhouse-1 ] (item=clickhouse-common-static) => {"ansible_loop_var": "item", "changed": false, "dest": "./clickhouse-common-static-22.3.3.44.rpm", "elapsed":
+0, "gid":
+1000, "group": "centos", "item": "clickhouse-common-static", "mode": "0664", "msg": "Request failed", "owner": "centos", "response": "HTTP Error 404: Not Found", "secontext": "unconfined_u:object_r:user_home_t:s0", "size":
+246310036, "state": "file", "status_code":
+404, "uid":
+1000, "url": "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-22.3.3.44.noarch.rpm" }
+      TASK [Get clickhouse distrib] ******************************************************************************
 ok: [ clickhouse-1 ]
 
       TASK [Install clickhouse packages] *************************************************************************
@@ -244,9 +241,9 @@ ok: [ clickhouse-1 ]
       TASK [Create table] ****************************************************************************************
 changed: [ clickhouse-1 ]
 
-           PLAY [Install Vector] **************************************************************************************
+      PLAY [Install Vector] **************************************************************************************
 
-           TASK [Gathering Facts] *************************************************************************************
+      TASK [Gathering Facts] *************************************************************************************
 ok: [ vector-1 ]
 
       TASK [Creates directory tmp/vector/] ***********************************************************************
@@ -264,9 +261,9 @@ ok: [ vector-1 ]
       TASK [Restart vector service] ******************************************************************************
 changed: [ vector-1 ]
 
-           PLAY [Install NGINX] ***************************************************************************************
+      PLAY [Install NGINX] ***************************************************************************************
 
-           TASK [Gathering Facts] *************************************************************************************
+      TASK [Gathering Facts] *************************************************************************************
 ok: [ lighthouse-1 ]
 
       TASK [INSTALL NGINX | install repo epel-release] ***********************************************************
@@ -299,11 +296,12 @@ vector-1: ok=6    changed=1    unreachable=0    failed=0    skipped=0    rescued
 ```
 
 8. Повторно запустите playbook с флагом `--diff` и убедитесь, что playbook идемпотентен.
-   Повторный результат дает аналогичный вывод.
 
-9. Подготовьте README.md файл по своему playbook. В нём должно быть описано: что делает playbook, какие у него есть
-   параметры и теги.
-10. Готовый playbook выложите в свой репозиторий, поставьте тег `08-ansible-03-yandex` на фиксирующий коммит, в ответ
+9. Повторный результат дает аналогичный вывод.
+
+10. Подготовьте README.md файл по своему playbook. В нём должно быть описано: что делает playbook, какие у него есть
+    параметры и теги.
+11. Готовый playbook выложите в свой репозиторий, поставьте тег `08-ansible-03-yandex` на фиксирующий коммит, в ответ
     предоставьте ссылку на него.
 
 Осталось проверить работоспособность установленного ПО:
