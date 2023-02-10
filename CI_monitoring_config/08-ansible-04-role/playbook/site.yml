@@ -1,89 +1,20 @@
 ---
 - name: Install Clickhouse
-  become_user: root
   remote_user: centos
   hosts: clickhouse
-  tags: clickhouse
-  handlers:
-    - name: Start clickhouse service
-      become: true
-      ansible.builtin.service:
-        name: clickhouse-server
-        state: restarted
-  tasks:
-    - block:
-        - name: Get clickhouse distrib
-          ansible.builtin.get_url:
-            url: "https://packages.clickhouse.com/rpm/stable/{{ item }}-{{ clickhouse_version }}.noarch.rpm"
-            dest: "./{{ item }}-{{ clickhouse_version }}.rpm"
-          with_items: "{{ clickhouse_packages }}"
-      rescue:
-        - name: Get clickhouse distrib
-          ansible.builtin.get_url:
-            url: "https://packages.clickhouse.com/rpm/stable/clickhouse-common-static-{{ clickhouse_version }}.x86_64.rpm"
-            dest: "./clickhouse-common-static-{{ clickhouse_version }}.rpm"
-    - name: Install clickhouse packages
-      become: true
-      ansible.builtin.yum:
-        name:
-          - clickhouse-common-static-{{ clickhouse_version }}.rpm
-          - clickhouse-client-{{ clickhouse_version }}.rpm
-          - clickhouse-server-{{ clickhouse_version }}.rpm
-      notify: Start clickhouse service
-    - name: Flush handler
-      meta: flush_handlers
-    - name: Create database
-      become: true
-      ansible.builtin.command: "clickhouse-client --query 'CREATE DATABASE logs;'"
-      register: create_db
-      failed_when: create_db.rc != 0 and create_db.rc !=82
-      changed_when: create_db.rc == 0
-    - name: Create table
-      become: true
-      ansible.builtin.command: "clickhouse-client --query 'CREATE TABLE IF NOT EXISTS logs.mytable
-        ('timestamp' Date, 'status' String, 'message' String) ENGINE = Log;'"
-      register: create_table
+  roles:
+    - role: clickhouse
+
 - name: Install Vector
-  become_user: root
   remote_user: centos
   hosts: vector
   tags: vector
-  tasks:
-    - name: Creates directory tmp/vector/
-      become: true
-      file:
-        path: /tmp/vector/
-        state: directory
-    - name: Get vector
-      become: true
-      ansible.builtin.get_url:
-        url: "https://packages.timber.io/vector/0.27.0/vector-0.27.0-1.{{ arch }}.rpm"
-        dest: "/tmp/vector/vector-0.27.0-1.{{ arch }}.rpm"
-    - name: install vector
-      become: true
-      become_user: root
-      ansible.builtin.yum:
-        name: "/tmp/vector/vector-0.27.0-1.{{ arch }}.rpm"
-    - name: Copy config
-      become: true
-      ansible.builtin.copy:
-        src: ./vector_config/vector.yaml
-        dest: /etc/vector/vector.yaml
-        owner: root
-        group: root
-        mode: '777'
-    - name: Restart vector service
-      become: true
-      ansible.builtin.systemd:
-        name: vector
-        state: restarted
-        daemon_reload: true
+  roles:
+    - role: vector-role
 
-- name: Install NGINX
+- name: Install lighthouse
   hosts: lighthouse
-  become_user: root
   remote_user: centos
-  tags: nginx
   handlers:
     - name: start_nginx
       become: true
@@ -91,7 +22,7 @@
     - name: restart_nginx
       become: true
       ansible.builtin.command: "nginx -s reload"
-  tasks:
+  pre_tasks:
     - name: INSTALL NGINX | install repo epel-release
       become: true
       ansible.builtin.yum:
@@ -110,32 +41,6 @@
         dest: /etc/nginx/nginx.conf
         mode: 0644
       notify: restart_nginx
-- name: Install lighthouse
-  hosts: lighthouse
-  become_user: root
-  remote_user: centos
-  tags: lighthouse
-  handlers:
-  - name: restart_nginx
-    become: true
-    ansible.builtin.command: "nginx -s reload"
-  pre_tasks:
-    - name: LIGHTHOUSE | git
-      become: true
-      ansible.builtin.yum:
-        name: git
-        state: present
-  tasks:
-    - name: LIGHTHOUSE |  Download from git
-      become: true
-      ansible.builtin.git:
-        repo: "https://github.com/VKCOM/lighthouse.git"
-        dest: "{{ lighthouse_dir }}"
-        version: master
-    - name: LIGHTHOUSE | config
-      become: true
-      ansible.builtin.template:
-        src: ./templates/lighthouse.conf.j2
-        dest: /etc/nginx/conf.d/default.conf
-        mode: 0664
-      notify: restart_nginx
+
+  roles:
+    - role: lighthouse-role
