@@ -1,0 +1,6 @@
+nginx_user: root
+worker_processes: 1
+worker_connections: 1024
+client_max_body_size: 1024M
+
+lighthouse_dir: /opt/lighthouse
