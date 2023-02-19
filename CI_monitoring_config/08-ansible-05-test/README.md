@@ -642,6 +642,8 @@ INFO     Pruning extra files from scenario ephemeral directory
 
 ### Запуск контейнера
 
+[Ссылка на роль Vector, включая TOX](https://github.com/nikolay480/vector-role)
+
 ```bash
 nik@nik-Ubuntu:~/vector-role$ docker run --privileged=True -v /home/nik/vector-role:/opt/vector-role -v /var/run/docker.sock:/var/run/docker.sock -w /opt/vector-role -it aragast/netology:latest /bin/bash
 ```
