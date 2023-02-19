@@ -792,7 +792,7 @@ localhost                  : ok=4    changed=1    unreachable=0    failed=1    s
 
 Если закоментировать строку `command_handling: "{{ item.command_handling | default('compatibility') }}"`  в `/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule_docker/playbooks/create.yml`:
 
- выполенени проходит дальше и возникает  такая ошибка:
+ выполнение проходит дальше и возникает  такая ошибка:
 
 ```bash
 TASK [Gathering Facts] *********************************************************
