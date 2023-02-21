@@ -642,27 +642,383 @@ INFO     Pruning extra files from scenario ephemeral directory
 
 ### Запуск контейнера
 
-[Ссылка на роль Vector, включая TOX](https://github.com/nikolay480/vector-role)
+[Vector 1.3.0 ](https://github.com/nikolay480/vector-role/tree/1.3.0)
 
 ```bash
 nik@nik-Ubuntu:~/vector-role$ docker run --privileged=True -v /home/nik/vector-role:/opt/vector-role -v /var/run/docker.sock:/var/run/docker.sock -w /opt/vector-role -it aragast/netology:latest /bin/bash
 ```
 ### driver: podman
+```bash
+cat /etc/containers/containers.conf
+[containers]
+userns="host"
+ipcns="host"
+cgroupns="host"
+cgroups="disabled"
+log_driver = "k8s-file"
+[engine]
+cgroup_manager = "cgroupfs"
+events_logger="file"
+runtime="crun"
+```
+
+```bash
+nano /etc/containers/storage.conf 
+driver ="vfs"
+
+```
+### Результат выполнения команды:
+
 <details>
 
 ```bash
-[root@ea9ee43bd5d8 vector-role]# tox
-py39-ansible210 create: /opt/vector-role/.tox/py39-ansible210
-py39-ansible210 installdeps: -rtox-requirements.txt, ansible<3.0
-py39-ansible210 installed: ansible==2.10.7,ansible-base==2.10.17,ansible-compat==3.0.1,ansible-core==2.14.2,ansible-lint==5.1.3,arrow==1.2.3,attrs==22.2.0,bcrypt==4.0.1,binaryornot==0.4.4,bracex==2.3.post1,Cerberus==1.3.2,certifi==2022.12.7,cffi==1.15.1,chardet==5.1.0,charset-normalizer==3.0.1,click==8.1.3,click-help-colors==0.9.1,cookiecutter==2.1.1,cryptography==39.0.1,distro==1.8.0,docker==6.0.1,enrich==1.2.7,idna==3.4,Jinja2==3.1.2,jinja2-time==0.2.0,jmespath==1.0.1,jsonschema==4.17.3,lxml==4.9.2,markdown-it-py==2.1.0,MarkupSafe==2.1.2,mdurl==0.1.2,molecule==3.4.0,molecule-docker==1.1.0,molecule-podman==1.0.1,packaging==23.0,paramiko==2.12.0,pathspec==0.11.0,pluggy==0.13.1,pycparser==2.21,Pygments==2.14.0,PyNaCl==1.5.0,pyrsistent==0.19.3,python-dateutil==2.8.2,python-slugify==8.0.0,PyYAML==5.4.1,requests==2.28.2,resolvelib==0.8.1,rich==13.3.1,ruamel.yaml==0.17.21,ruamel.yaml.clib==0.2.7,selinux==0.3.0,six==1.16.0,subprocess-tee==0.4.1,tenacity==8.2.1,text-unidecode==1.3,urllib3==1.26.14,wcmatch==8.4.1,websocket-client==1.5.1,yamllint==1.26.3
-py39-ansible210 run-test-pre: PYTHONHASHSEED='2260736461'
-py39-ansible210 run-test: commands[0] | molecule test -s toxic --destroy always
-INFO     toxic scenario test matrix: destroy, create, converge, destroy
+[root@74b416f42af2 vector-role]# tox
+py37-ansible210 installed: ansible==2.10.7,ansible-base==2.10.17,ansible-compat==1.0.0,ansible-lint==5.1.3,arrow==1.2.3,bcrypt==4.0.1,binaryornot==0.4.4,bracex==2.3.post1,cached-property==1.5.2,Cerberus==1.3.2,certifi==2022.12.7,cffi==1.15.1,chardet==5.1.0,charset-normalizer==3.0.1,click==8.1.3,click-help-colors==0.9.1,cookiecutter==2.1.1,cryptography==39.0.1,distro==1.8.0,enrich==1.2.7,idna==3.4,importlib-metadata==6.0.0,Jinja2==3.1.2,jinja2-time==0.2.0,jmespath==1.0.1,lxml==4.9.2,markdown-it-py==2.1.0,MarkupSafe==2.1.2,mdurl==0.1.2,molecule==3.5.2,molecule-podman==1.1.0,packaging==23.0,paramiko==2.12.0,pathspec==0.11.0,pluggy==1.0.0,pycparser==2.21,Pygments==2.14.0,PyNaCl==1.5.0,python-dateutil==2.8.2,python-slugify==8.0.0,PyYAML==5.4.1,requests==2.28.2,rich==13.3.1,ruamel.yaml==0.17.21,ruamel.yaml.clib==0.2.7,selinux==0.2.1,six==1.16.0,subprocess-tee==0.3.5,tenacity==8.2.1,text-unidecode==1.3,typing_extensions==4.5.0,urllib3==1.26.14,wcmatch==8.4.1,yamllint==1.26.3,zipp==3.14.0
+py37-ansible210 run-test-pre: PYTHONHASHSEED='1681887477'
+py37-ansible210 run-test: commands[0] | molecule test -s toxic --destroy always
+INFO     toxic scenario test matrix: destroy, create, converge, idempotence, destroy
 INFO     Performing prerun...
-WARNING  Failed to locate command: [Errno 2] No such file or directory: 'git'
-INFO     Guessed /opt/vector-role as project root directory
-INFO     Using /root/.cache/ansible-lint/b984a4/roles/vector.vector symlink to current repository in order to enable Ansible to find the role using its expected full name.
-INFO     Added ANSIBLE_ROLES_PATH=~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/root/.cache/ansible-lint/b984a4/roles
+INFO     Set ANSIBLE_LIBRARY=/root/.cache/ansible-compat/b984a4/modules:/root/.ansible/plugins/modules:/usr/share/ansible/plugins/modules
+INFO     Set ANSIBLE_COLLECTIONS_PATH=/root/.cache/ansible-compat/b984a4/collections:/root/.ansible/collections:/usr/share/ansible/collections
+INFO     Set ANSIBLE_ROLES_PATH=/root/.cache/ansible-compat/b984a4/roles:/root/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles
+INFO     Running toxic > destroy
+INFO     Sanity checks: 'podman'
+
+PLAY [Destroy] *****************************************************************
+
+TASK [Destroy molecule instance(s)] ********************************************
+changed: [localhost] => (item={'image': 'geerlingguy/docker-ubuntu2004-ansible', 'name': 'ubuntu', 'pre_build_image': True})
+
+TASK [Wait for instance(s) deletion to complete] *******************************
+FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+FAILED - RETRYING: Wait for instance(s) deletion to complete (299 retries left).
+FAILED - RETRYING: Wait for instance(s) deletion to complete (298 retries left).
+changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '303219109931.26908', 'results_file': '/root/.ansible_async/303219109931.26908', 'changed': True, 'failed': False, 'item': {'image': 'geerlingguy/docker-ubuntu2004-ansible', 'name': 'ubuntu', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+INFO     Running toxic > create
+
+PLAY [Create] ******************************************************************
+
+TASK [get podman executable path] **********************************************
+ok: [localhost]
+
+TASK [save path to executable as fact] *****************************************
+ok: [localhost]
+
+TASK [Log into a container registry] *******************************************
+skipping: [localhost] => (item="ubuntu registry username: None specified") 
+
+TASK [Check presence of custom Dockerfiles] ************************************
+ok: [localhost] => (item=Dockerfile: None specified)
+
+TASK [Create Dockerfiles from image names] *************************************
+skipping: [localhost] => (item="Dockerfile: None specified; Image: geerlingguy/docker-ubuntu2004-ansible") 
+
+TASK [Discover local Podman images] ********************************************
+ok: [localhost] => (item=ubuntu)
+
+TASK [Build an Ansible compatible image] ***************************************
+skipping: [localhost] => (item=geerlingguy/docker-ubuntu2004-ansible) 
+
+TASK [Determine the CMD directives] ********************************************
+ok: [localhost] => (item="ubuntu command: None specified")
+
+TASK [Remove possible pre-existing containers] *********************************
+changed: [localhost]
+
+TASK [Discover local podman networks] ******************************************
+skipping: [localhost] => (item=ubuntu: None specified) 
+
+TASK [Create podman network dedicated to this scenario] ************************
+skipping: [localhost]
+
+TASK [Create molecule instance(s)] *********************************************
+changed: [localhost] => (item=ubuntu)
+
+TASK [Wait for instance(s) creation to complete] *******************************
+FAILED - RETRYING: Wait for instance(s) creation to complete (300 retries left).
+FAILED - RETRYING: Wait for instance(s) creation to complete (299 retries left).
+FAILED - RETRYING: Wait for instance(s) creation to complete (298 retries left).
+FAILED - RETRYING: Wait for instance(s) creation to complete (297 retries left).
+FAILED - RETRYING: Wait for instance(s) creation to complete (296 retries left).
+changed: [localhost] => (item=ubuntu)
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=8    changed=3    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0
+
+INFO     Running toxic > converge
+
+PLAY [Converge] ****************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ubuntu]
+
+TASK [Copy something to test use of synchronize module] ************************
+skipping: [ubuntu]
+
+TASK [Include vector-role] *****************************************************
+
+TASK [vector-role : Creates directory /tmp/vector/] ****************************
+[WARNING]: The value "0" (type int) was converted to "'0'" (type string). If
+this does not look like what you expect, quote the entire value to ensure it
+does not change.
+changed: [ubuntu]
+
+TASK [vector-role : Get vector | EL] *******************************************
+skipping: [ubuntu]
+
+TASK [vector-role : Get vector | Ubuntu] ***************************************
+changed: [ubuntu]
+
+TASK [vector-role : Install vector | EL] ***************************************
+skipping: [ubuntu]
+
+TASK [vector-role : Install vector | Ubuntu] ***********************************
+changed: [ubuntu]
+
+TASK [vector-role : Copy vector-config] ****************************************
+changed: [ubuntu]
+
+TASK [vector-role : Create systemd unit Vector] ********************************
+changed: [ubuntu]
+
+PLAY RECAP *********************************************************************
+ubuntu                     : ok=6    changed=5    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+
+INFO     Running toxic > idempotence
+
+PLAY [Converge] ****************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ubuntu]
+
+TASK [Copy something to test use of synchronize module] ************************
+skipping: [ubuntu]
+
+TASK [Include vector-role] *****************************************************
+
+TASK [vector-role : Creates directory /tmp/vector/] ****************************
+[WARNING]: The value "0" (type int) was converted to "'0'" (type string). If
+this does not look like what you expect, quote the entire value to ensure it
+does not change.
+ok: [ubuntu]
+
+TASK [vector-role : Get vector | EL] *******************************************
+skipping: [ubuntu]
+
+TASK [vector-role : Get vector | Ubuntu] ***************************************
+ok: [ubuntu]
+
+TASK [vector-role : Install vector | EL] ***************************************
+skipping: [ubuntu]
+
+TASK [vector-role : Install vector | Ubuntu] ***********************************
+ok: [ubuntu]
+
+TASK [vector-role : Copy vector-config] ****************************************
+ok: [ubuntu]
+
+TASK [vector-role : Create systemd unit Vector] ********************************
+ok: [ubuntu]
+
+PLAY RECAP *********************************************************************
+ubuntu                     : ok=6    changed=0    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+
+INFO     Idempotence completed successfully.
+INFO     Running toxic > destroy
+
+PLAY [Destroy] *****************************************************************
+
+TASK [Destroy molecule instance(s)] ********************************************
+changed: [localhost] => (item={'image': 'geerlingguy/docker-ubuntu2004-ansible', 'name': 'ubuntu', 'pre_build_image': True})
+
+TASK [Wait for instance(s) deletion to complete] *******************************
+FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+FAILED - RETRYING: Wait for instance(s) deletion to complete (299 retries left).
+FAILED - RETRYING: Wait for instance(s) deletion to complete (298 retries left).
+changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '972141569688.29798', 'results_file': '/root/.ansible_async/972141569688.29798', 'changed': True, 'failed': False, 'item': {'image': 'geerlingguy/docker-ubuntu2004-ansible', 'name': 'ubuntu', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+INFO     Pruning extra files from scenario ephemeral directory
+py37-ansible30 installed: ansible==3.0.0,ansible-base==2.10.17,ansible-compat==1.0.0,ansible-lint==5.1.3,arrow==1.2.3,bcrypt==4.0.1,binaryornot==0.4.4,bracex==2.3.post1,cached-property==1.5.2,Cerberus==1.3.2,certifi==2022.12.7,cffi==1.15.1,chardet==5.1.0,charset-normalizer==3.0.1,click==8.1.3,click-help-colors==0.9.1,cookiecutter==2.1.1,cryptography==39.0.1,distro==1.8.0,enrich==1.2.7,idna==3.4,importlib-metadata==6.0.0,Jinja2==3.1.2,jinja2-time==0.2.0,jmespath==1.0.1,lxml==4.9.2,markdown-it-py==2.1.0,MarkupSafe==2.1.2,mdurl==0.1.2,molecule==3.5.2,molecule-podman==1.1.0,packaging==23.0,paramiko==2.12.0,pathspec==0.11.0,pluggy==1.0.0,pycparser==2.21,Pygments==2.14.0,PyNaCl==1.5.0,python-dateutil==2.8.2,python-slugify==8.0.0,PyYAML==5.4.1,requests==2.28.2,rich==13.3.1,ruamel.yaml==0.17.21,ruamel.yaml.clib==0.2.7,selinux==0.2.1,six==1.16.0,subprocess-tee==0.3.5,tenacity==8.2.1,text-unidecode==1.3,typing_extensions==4.5.0,urllib3==1.26.14,wcmatch==8.4.1,yamllint==1.26.3,zipp==3.14.0
+py37-ansible30 run-test-pre: PYTHONHASHSEED='1681887477'
+py37-ansible30 run-test: commands[0] | molecule test -s toxic --destroy always
+INFO     toxic scenario test matrix: destroy, create, converge, idempotence, destroy
+INFO     Performing prerun...
+INFO     Set ANSIBLE_LIBRARY=/root/.cache/ansible-compat/b984a4/modules:/root/.ansible/plugins/modules:/usr/share/ansible/plugins/modules
+INFO     Set ANSIBLE_COLLECTIONS_PATH=/root/.cache/ansible-compat/b984a4/collections:/root/.ansible/collections:/usr/share/ansible/collections
+INFO     Set ANSIBLE_ROLES_PATH=/root/.cache/ansible-compat/b984a4/roles:/root/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles
+INFO     Running toxic > destroy
+INFO     Sanity checks: 'podman'
+
+PLAY [Destroy] *****************************************************************
+
+TASK [Destroy molecule instance(s)] ********************************************
+changed: [localhost] => (item={'image': 'geerlingguy/docker-ubuntu2004-ansible', 'name': 'ubuntu', 'pre_build_image': True})
+
+TASK [Wait for instance(s) deletion to complete] *******************************
+changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '47340204554.29950', 'results_file': '/root/.ansible_async/47340204554.29950', 'changed': True, 'failed': False, 'item': {'image': 'geerlingguy/docker-ubuntu2004-ansible', 'name': 'ubuntu', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+INFO     Running toxic > create
+
+PLAY [Create] ******************************************************************
+
+TASK [get podman executable path] **********************************************
+ok: [localhost]
+
+TASK [save path to executable as fact] *****************************************
+ok: [localhost]
+
+TASK [Log into a container registry] *******************************************
+skipping: [localhost] => (item="ubuntu registry username: None specified") 
+
+TASK [Check presence of custom Dockerfiles] ************************************
+ok: [localhost] => (item=Dockerfile: None specified)
+
+TASK [Create Dockerfiles from image names] *************************************
+skipping: [localhost] => (item="Dockerfile: None specified; Image: geerlingguy/docker-ubuntu2004-ansible") 
+
+TASK [Discover local Podman images] ********************************************
+ok: [localhost] => (item=ubuntu)
+
+TASK [Build an Ansible compatible image] ***************************************
+skipping: [localhost] => (item=geerlingguy/docker-ubuntu2004-ansible) 
+
+TASK [Determine the CMD directives] ********************************************
+ok: [localhost] => (item="ubuntu command: None specified")
+
+TASK [Remove possible pre-existing containers] *********************************
+changed: [localhost]
+
+TASK [Discover local podman networks] ******************************************
+skipping: [localhost] => (item=ubuntu: None specified) 
+
+TASK [Create podman network dedicated to this scenario] ************************
+skipping: [localhost]
+
+TASK [Create molecule instance(s)] *********************************************
+changed: [localhost] => (item=ubuntu)
+
+TASK [Wait for instance(s) creation to complete] *******************************
+FAILED - RETRYING: Wait for instance(s) creation to complete (300 retries left).
+FAILED - RETRYING: Wait for instance(s) creation to complete (299 retries left).
+changed: [localhost] => (item=ubuntu)
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=8    changed=3    unreachable=0    failed=0    skipped=5    rescued=0    ignored=0
+
+INFO     Running toxic > converge
+
+PLAY [Converge] ****************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ubuntu]
+
+TASK [Copy something to test use of synchronize module] ************************
+skipping: [ubuntu]
+
+TASK [Include vector-role] *****************************************************
+
+TASK [vector-role : Creates directory /tmp/vector/] ****************************
+[WARNING]: The value "0" (type int) was converted to "'0'" (type string). If
+this does not look like what you expect, quote the entire value to ensure it
+does not change.
+changed: [ubuntu]
+
+TASK [vector-role : Get vector | EL] *******************************************
+skipping: [ubuntu]
+
+TASK [vector-role : Get vector | Ubuntu] ***************************************
+changed: [ubuntu]
+
+TASK [vector-role : Install vector | EL] ***************************************
+skipping: [ubuntu]
+
+TASK [vector-role : Install vector | Ubuntu] ***********************************
+changed: [ubuntu]
+
+TASK [vector-role : Copy vector-config] ****************************************
+changed: [ubuntu]
+
+TASK [vector-role : Create systemd unit Vector] ********************************
+changed: [ubuntu]
+
+PLAY RECAP *********************************************************************
+ubuntu                     : ok=6    changed=5    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+
+INFO     Running toxic > idempotence
+
+PLAY [Converge] ****************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [ubuntu]
+
+TASK [Copy something to test use of synchronize module] ************************
+skipping: [ubuntu]
+
+TASK [Include vector-role] *****************************************************
+
+TASK [vector-role : Creates directory /tmp/vector/] ****************************
+[WARNING]: The value "0" (type int) was converted to "'0'" (type string). If
+this does not look like what you expect, quote the entire value to ensure it
+does not change.
+ok: [ubuntu]
+
+TASK [vector-role : Get vector | EL] *******************************************
+skipping: [ubuntu]
+
+TASK [vector-role : Get vector | Ubuntu] ***************************************
+ok: [ubuntu]
+
+TASK [vector-role : Install vector | EL] ***************************************
+skipping: [ubuntu]
+
+TASK [vector-role : Install vector | Ubuntu] ***********************************
+ok: [ubuntu]
+
+TASK [vector-role : Copy vector-config] ****************************************
+ok: [ubuntu]
+
+TASK [vector-role : Create systemd unit Vector] ********************************
+ok: [ubuntu]
+
+PLAY RECAP *********************************************************************
+ubuntu                     : ok=6    changed=0    unreachable=0    failed=0    skipped=3    rescued=0    ignored=0
+
+INFO     Idempotence completed successfully.
+INFO     Running toxic > destroy
+
+PLAY [Destroy] *****************************************************************
+
+TASK [Destroy molecule instance(s)] ********************************************
+changed: [localhost] => (item={'image': 'geerlingguy/docker-ubuntu2004-ansible', 'name': 'ubuntu', 'pre_build_image': True})
+
+TASK [Wait for instance(s) deletion to complete] *******************************
+FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
+FAILED - RETRYING: Wait for instance(s) deletion to complete (299 retries left).
+FAILED - RETRYING: Wait for instance(s) deletion to complete (298 retries left).
+changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '520158102221.32725', 'results_file': '/root/.ansible_async/520158102221.32725', 'changed': True, 'failed': False, 'item': {'image': 'geerlingguy/docker-ubuntu2004-ansible', 'name': 'ubuntu', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0
+
+INFO     Pruning extra files from scenario ephemeral directory
+py39-ansible210 installed: ansible==2.10.7,ansible-base==2.10.17,ansible-compat==3.0.1,ansible-core==2.14.2,ansible-lint==5.1.3,arrow==1.2.3,attrs==22.2.0,bcrypt==4.0.1,binaryornot==0.4.4,bracex==2.3.post1,Cerberus==1.3.2,certifi==2022.12.7,cffi==1.15.1,chardet==5.1.0,charset-normalizer==3.0.1,click==8.1.3,click-help-colors==0.9.1,cookiecutter==2.1.1,cryptography==39.0.1,distro==1.8.0,enrich==1.2.7,idna==3.4,Jinja2==3.1.2,jinja2-time==0.2.0,jmespath==1.0.1,jsonschema==4.17.3,lxml==4.9.2,markdown-it-py==2.1.0,MarkupSafe==2.1.2,mdurl==0.1.2,molecule==3.5.2,molecule-podman==2.0.0,packaging==23.0,paramiko==2.12.0,pathspec==0.11.0,pluggy==1.0.0,pycparser==2.21,Pygments==2.14.0,PyNaCl==1.5.0,pyrsistent==0.19.3,python-dateutil==2.8.2,python-slugify==8.0.0,PyYAML==5.4.1,requests==2.28.2,resolvelib==0.8.1,rich==13.3.1,ruamel.yaml==0.17.21,ruamel.yaml.clib==0.2.7,selinux==0.3.0,six==1.16.0,subprocess-tee==0.4.1,tenacity==8.2.1,text-unidecode==1.3,urllib3==1.26.14,wcmatch==8.4.1,yamllint==1.26.3
+py39-ansible210 run-test-pre: PYTHONHASHSEED='1681887477'
+py39-ansible210 run-test: commands[0] | molecule test -s toxic --destroy always
+INFO     toxic scenario test matrix: destroy, create, converge, idempotence, destroy
+INFO     Performing prerun...
+INFO     Set ANSIBLE_LIBRARY=/root/.cache/ansible-compat/f5bcd7/modules:/root/.ansible/plugins/modules:/usr/share/ansible/plugins/modules
+INFO     Set ANSIBLE_COLLECTIONS_PATH=/root/.cache/ansible-compat/f5bcd7/collections:/root/.ansible/collections:/usr/share/ansible/collections
+INFO     Set ANSIBLE_ROLES_PATH=/root/.cache/ansible-compat/f5bcd7/roles:/root/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles
 INFO     Running toxic > destroy
 INFO     Sanity checks: 'podman'
 Traceback (most recent call last):
@@ -682,22 +1038,22 @@ Traceback (most recent call last):
     return f(get_current_context(), *args, **kwargs)
   File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule/command/test.py", line 159, in test
     base.execute_cmdline_scenarios(scenario_name, args, command_args, ansible_args)
-  File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule/command/base.py", line 119, in execute_cmdline_scenarios
+  File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule/command/base.py", line 118, in execute_cmdline_scenarios
     execute_scenario(scenario)
-  File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule/command/base.py", line 161, in execute_scenario
+  File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule/command/base.py", line 160, in execute_scenario
     execute_subcommand(scenario.config, action)
-  File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule/command/base.py", line 150, in execute_subcommand
+  File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule/command/base.py", line 149, in execute_subcommand
     return command(config).execute()
-  File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule/logger.py", line 187, in wrapper
+  File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule/logger.py", line 188, in wrapper
     rt = func(*args, **kwargs)
   File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule/command/destroy.py", line 107, in execute
     self._config.provisioner.destroy()
   File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule/provisioner/ansible.py", line 705, in destroy
     pb.execute()
-  File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule/provisioner/ansible_playbook.py", line 106, in execute
+  File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule/provisioner/ansible_playbook.py", line 110, in execute
     self._config.driver.sanity_checks()
-  File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule_podman/driver.py", line 212, in sanity_checks
-    if runtime.version < Version("2.10.0") and runtime.config.ansible_pipelining:
+  File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/molecule_podman/driver.py", line 224, in sanity_checks
+    if runtime.version < Version("2.10.0"):
   File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/ansible_compat/runtime.py", line 208, in version
     self._version = parse_ansible_version(proc.stdout)
   File "/opt/vector-role/.tox/py39-ansible210/lib/python3.9/site-packages/ansible_compat/config.py", line 39, in parse_ansible_version
@@ -711,15 +1067,14 @@ ansible_compat.errors.InvalidPrerequisiteError: Unable to parse ansible cli vers
 
 Keep in mind that only 2.12 or newer are supported.
 ERROR: InvocationError for command /opt/vector-role/.tox/py39-ansible210/bin/molecule test -s toxic --destroy always (exited with code 1)
-py39-ansible30 installed: ansible==3.0.0,ansible-base==2.10.17,ansible-compat==3.0.1,ansible-core==2.14.2,ansible-lint==5.1.3,arrow==1.2.3,attrs==22.2.0,bcrypt==4.0.1,binaryornot==0.4.4,bracex==2.3.post1,Cerberus==1.3.2,certifi==2022.12.7,cffi==1.15.1,chardet==5.1.0,charset-normalizer==3.0.1,click==8.1.3,click-help-colors==0.9.1,cookiecutter==2.1.1,cryptography==39.0.1,distro==1.8.0,docker==6.0.1,enrich==1.2.7,idna==3.4,Jinja2==3.1.2,jinja2-time==0.2.0,jmespath==1.0.1,jsonschema==4.17.3,lxml==4.9.2,markdown-it-py==2.1.0,MarkupSafe==2.1.2,mdurl==0.1.2,molecule==3.4.0,molecule-docker==1.1.0,molecule-podman==1.0.1,packaging==23.0,paramiko==2.12.0,pathspec==0.11.0,pluggy==0.13.1,pycparser==2.21,Pygments==2.14.0,PyNaCl==1.5.0,pyrsistent==0.19.3,python-dateutil==2.8.2,python-slugify==8.0.0,PyYAML==5.4.1,requests==2.28.2,resolvelib==0.8.1,rich==13.3.1,ruamel.yaml==0.17.21,ruamel.yaml.clib==0.2.7,selinux==0.3.0,six==1.16.0,subprocess-tee==0.4.1,tenacity==8.2.1,text-unidecode==1.3,urllib3==1.26.14,wcmatch==8.4.1,websocket-client==1.5.1,yamllint==1.26.3
-py39-ansible30 run-test-pre: PYTHONHASHSEED='2260736461'
+py39-ansible30 installed: ansible==3.0.0,ansible-base==2.10.17,ansible-compat==3.0.1,ansible-core==2.14.2,ansible-lint==5.1.3,arrow==1.2.3,attrs==22.2.0,bcrypt==4.0.1,binaryornot==0.4.4,bracex==2.3.post1,Cerberus==1.3.2,certifi==2022.12.7,cffi==1.15.1,chardet==5.1.0,charset-normalizer==3.0.1,click==8.1.3,click-help-colors==0.9.1,cookiecutter==2.1.1,cryptography==39.0.1,distro==1.8.0,enrich==1.2.7,idna==3.4,Jinja2==3.1.2,jinja2-time==0.2.0,jmespath==1.0.1,jsonschema==4.17.3,lxml==4.9.2,markdown-it-py==2.1.0,MarkupSafe==2.1.2,mdurl==0.1.2,molecule==3.5.2,molecule-podman==2.0.0,packaging==23.0,paramiko==2.12.0,pathspec==0.11.0,pluggy==1.0.0,pycparser==2.21,Pygments==2.14.0,PyNaCl==1.5.0,pyrsistent==0.19.3,python-dateutil==2.8.2,python-slugify==8.0.0,PyYAML==5.4.1,requests==2.28.2,resolvelib==0.8.1,rich==13.3.1,ruamel.yaml==0.17.21,ruamel.yaml.clib==0.2.7,selinux==0.3.0,six==1.16.0,subprocess-tee==0.4.1,tenacity==8.2.1,text-unidecode==1.3,urllib3==1.26.14,wcmatch==8.4.1,yamllint==1.26.3
+py39-ansible30 run-test-pre: PYTHONHASHSEED='1681887477'
 py39-ansible30 run-test: commands[0] | molecule test -s toxic --destroy always
-INFO     toxic scenario test matrix: destroy, create, converge, destroy
+INFO     toxic scenario test matrix: destroy, create, converge, idempotence, destroy
 INFO     Performing prerun...
-WARNING  Failed to locate command: [Errno 2] No such file or directory: 'git'
-INFO     Guessed /opt/vector-role as project root directory
-INFO     Using /root/.cache/ansible-lint/b984a4/roles/vector.vector symlink to current repository in order to enable Ansible to find the role using its expected full name.
-INFO     Added ANSIBLE_ROLES_PATH=~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/root/.cache/ansible-lint/b984a4/roles
+INFO     Set ANSIBLE_LIBRARY=/root/.cache/ansible-compat/f5bcd7/modules:/root/.ansible/plugins/modules:/usr/share/ansible/plugins/modules
+INFO     Set ANSIBLE_COLLECTIONS_PATH=/root/.cache/ansible-compat/f5bcd7/collections:/root/.ansible/collections:/usr/share/ansible/collections
+INFO     Set ANSIBLE_ROLES_PATH=/root/.cache/ansible-compat/f5bcd7/roles:/root/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles
 INFO     Running toxic > destroy
 INFO     Sanity checks: 'podman'
 Traceback (most recent call last):
@@ -739,22 +1094,22 @@ Traceback (most recent call last):
     return f(get_current_context(), *args, **kwargs)
   File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule/command/test.py", line 159, in test
     base.execute_cmdline_scenarios(scenario_name, args, command_args, ansible_args)
-  File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule/command/base.py", line 119, in execute_cmdline_scenarios
+  File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule/command/base.py", line 118, in execute_cmdline_scenarios
     execute_scenario(scenario)
-  File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule/command/base.py", line 161, in execute_scenario
+  File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule/command/base.py", line 160, in execute_scenario
     execute_subcommand(scenario.config, action)
-  File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule/command/base.py", line 150, in execute_subcommand
+  File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule/command/base.py", line 149, in execute_subcommand
     return command(config).execute()
-  File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule/logger.py", line 187, in wrapper
+  File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule/logger.py", line 188, in wrapper
     rt = func(*args, **kwargs)
   File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule/command/destroy.py", line 107, in execute
     self._config.provisioner.destroy()
   File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule/provisioner/ansible.py", line 705, in destroy
     pb.execute()
-  File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule/provisioner/ansible_playbook.py", line 106, in execute
+  File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule/provisioner/ansible_playbook.py", line 110, in execute
     self._config.driver.sanity_checks()
-  File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule_podman/driver.py", line 212, in sanity_checks
-    if runtime.version < Version("2.10.0") and runtime.config.ansible_pipelining:
+  File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule_podman/driver.py", line 224, in sanity_checks
+    if runtime.version < Version("2.10.0"):
   File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/ansible_compat/runtime.py", line 208, in version
     self._version = parse_ansible_version(proc.stdout)
   File "/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/ansible_compat/config.py", line 39, in parse_ansible_version
@@ -769,6 +1124,8 @@ ansible_compat.errors.InvalidPrerequisiteError: Unable to parse ansible cli vers
 Keep in mind that only 2.12 or newer are supported.
 ERROR: InvocationError for command /opt/vector-role/.tox/py39-ansible30/bin/molecule test -s toxic --destroy always (exited with code 1)
 ___________________________________________________________________________ summary ___________________________________________________________________________
+  py37-ansible210: commands succeeded
+  py37-ansible30: commands succeeded
 ERROR:   py39-ansible210: commands failed
 ERROR:   py39-ansible30: commands failed
 
@@ -776,232 +1133,8 @@ ERROR:   py39-ansible30: commands failed
 ```
 </details>
 
-### driver: docker
-Возникает ошибка `Unsupported parameters for (community.docker.docker_container) module: command_handling`
 
-<details>
+![img](./img/tox.png)
 
-```bash
-TASK [Wait for instance(s) creation to complete] *******************************
-FAILED - RETRYING: Wait for instance(s) creation to complete (300 retries left).
-failed: [localhost] (item={'started': 1, 'finished': 0, 'ansible_job_id': '408402111611.2435', 'results_file': '/root/.ansible_async/408402111611.2435', 'changed': True, 'failed': False, 'item': {'image': 'quay.io/centos/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'}) => {"ansible_job_id": "408402111611.2435", "ansible_loop_var": "item", "attempts": 2, "changed": false, "finished": 1, "item": {"ansible_job_id": "408402111611.2435", "ansible_loop_var": "item", "changed": true, "failed": false, "finished": 0, "item": {"image": "quay.io/centos/centos:7", "name": "centos7", "pre_build_image": true}, "results_file": "/root/.ansible_async/408402111611.2435", "started": 1}, "msg": "Unsupported parameters for (community.docker.docker_container) module: command_handling Supported parameters include: api_version, auto_remove, blkio_weight, ca_cert, cap_drop, capabilities, cgroup_parent, cleanup, client_cert, client_key, command, comparisons, container_default_behavior, cpu_period, cpu_quota, cpu_shares, cpus, cpuset_cpus, cpuset_mems, debug, default_host_ip, detach, device_read_bps, device_read_iops, device_requests, device_write_bps, device_write_iops, devices, dns_opts, dns_search_domains, dns_servers, docker_host, domainname, entrypoint, env, env_file, etc_hosts, exposed_ports, force_kill, groups, healthcheck, hostname, ignore_image, image, init, interactive, ipc_mode, keep_volumes, kernel_memory, kill_signal, labels, links, log_driver, log_options, mac_address, memory, memory_reservation, memory_swap, memory_swappiness, mounts, name, network_mode, networks, networks_cli_compatible, oom_killer, oom_score_adj, output_logs, paused, pid_mode, pids_limit, privileged, published_ports, pull, purge_networks, read_only, recreate, removal_wait_timeout, restart, restart_policy, restart_retries, runtime, security_opts, shm_size, ssl_version, state, stop_signal, stop_timeout, sysctls, timeout, tls, tls_hostname, tmpfs, tty, ulimits, user, userns_mode, uts, validate_certs, volume_driver, volumes, volumes_from, working_dir", "stderr": "/tmp/ansible_community.docker.docker_container_payload_33ser3q7/ansible_community.docker.docker_container_payload.zip/ansible_collections/community/docker/plugins/modules/docker_container.py:1193: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead.\n", "stderr_lines": ["/tmp/ansible_community.docker.docker_container_payload_33ser3q7/ansible_community.docker.docker_container_payload.zip/ansible_collections/community/docker/plugins/modules/docker_container.py:1193: DeprecationWarning: distutils Version classes are deprecated. Use packaging.version instead."]}
 
-PLAY RECAP *********************************************************************
-localhost                  : ok=4    changed=1    unreachable=0    failed=1    skipped=4    rescued=0    ignored=0
-
-```
-</details>
-
-Если закоментировать строку `command_handling: "{{ item.command_handling | default('compatibility') }}"`  в `/opt/vector-role/.tox/py39-ansible30/lib/python3.9/site-packages/molecule_docker/playbooks/create.yml`:
-
- выполнение проходит дальше и возникает  такая ошибка:
-
-```bash
-TASK [Gathering Facts] *********************************************************
-fatal: [centos7]: FAILED! => {"msg": "docker command not found in PATH"}
-
-PLAY RECAP *********************************************************************
-centos7                    : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0
-
-CRITICAL Ansible return code was 2, command was: ['ansible-playbook', '--inventory', '/root/.cache/molecule/vector-role/toxic/inventory', '--skip-tags', 'molecule-notest,notest', '/opt/vector-role/molecule/toxic/converge.yml']
-WARNING  An error occurred during the test sequence action: 'converge'. Cleaning up.
-```
-
-<details>
-
-```bash
-
-[root@ea9ee43bd5d8 vector-role]# tox
-py39-ansible210 installed: ansible==2.10.7,ansible-base==2.10.17,ansible-compat==3.0.1,ansible-core==2.14.2,ansible-lint==5.1.3,arrow==1.2.3,attrs==22.2.0,bcrypt==4.0.1,binaryornot==0.4.4,bracex==2.3.post1,Cerberus==1.3.2,certifi==2022.12.7,cffi==1.15.1,chardet==5.1.0,charset-normalizer==3.0.1,click==8.1.3,click-help-colors==0.9.1,cookiecutter==2.1.1,cryptography==39.0.1,distro==1.8.0,docker==6.0.1,enrich==1.2.7,idna==3.4,Jinja2==3.1.2,jinja2-time==0.2.0,jmespath==1.0.1,jsonschema==4.17.3,lxml==4.9.2,markdown-it-py==2.1.0,MarkupSafe==2.1.2,mdurl==0.1.2,molecule==3.4.0,molecule-docker==1.1.0,molecule-podman==1.0.1,packaging==23.0,paramiko==2.12.0,pathspec==0.11.0,pluggy==0.13.1,pycparser==2.21,Pygments==2.14.0,PyNaCl==1.5.0,pyrsistent==0.19.3,python-dateutil==2.8.2,python-slugify==8.0.0,PyYAML==5.4.1,requests==2.28.2,resolvelib==0.8.1,rich==13.3.1,ruamel.yaml==0.17.21,ruamel.yaml.clib==0.2.7,selinux==0.3.0,six==1.16.0,subprocess-tee==0.4.1,tenacity==8.2.1,text-unidecode==1.3,urllib3==1.26.14,wcmatch==8.4.1,websocket-client==1.5.1,yamllint==1.26.3
-py39-ansible210 run-test-pre: PYTHONHASHSEED='2378896231'
-py39-ansible210 run-test: commands[0] | molecule test -s toxic --destroy always
-INFO     toxic scenario test matrix: destroy, create, converge, destroy
-INFO     Performing prerun...
-WARNING  Failed to locate command: [Errno 2] No such file or directory: 'git'
-INFO     Guessed /opt/vector-role as project root directory
-INFO     Using /root/.cache/ansible-lint/b984a4/roles/vector.vector symlink to current repository in order to enable Ansible to find the role using its expected full name.
-INFO     Added ANSIBLE_ROLES_PATH=~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/root/.cache/ansible-lint/b984a4/roles
-INFO     Running toxic > destroy
-INFO     Sanity checks: 'docker'
-
-PLAY [Destroy] *****************************************************************
-
-TASK [Destroy molecule instance(s)] ********************************************
-changed: [localhost] => (item=centos7)
-
-TASK [Wait for instance(s) deletion to complete] *******************************
-FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
-ok: [localhost] => (item=centos7)
-
-TASK [Delete docker networks(s)] ***********************************************
-
-PLAY RECAP *********************************************************************
-localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
-
-INFO     Running toxic > create
-
-PLAY [Create] ******************************************************************
-
-TASK [Log into a Docker registry] **********************************************
-skipping: [localhost] => (item=None) 
-skipping: [localhost]
-
-TASK [Check presence of custom Dockerfiles] ************************************
-ok: [localhost] => (item={'image': 'quay.io/centos/centos:7', 'name': 'centos7', 'pre_build_image': True})
-
-TASK [Create Dockerfiles from image names] *************************************
-skipping: [localhost] => (item={'image': 'quay.io/centos/centos:7', 'name': 'centos7', 'pre_build_image': True}) 
-
-TASK [Discover local Docker images] ********************************************
-ok: [localhost] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': {'image': 'quay.io/centos/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item', 'i': 0, 'ansible_index_var': 'i'})
-
-TASK [Build an Ansible compatible image (new)] *********************************
-skipping: [localhost] => (item=molecule_local/quay.io/centos/centos:7) 
-
-TASK [Create docker network(s)] ************************************************
-
-TASK [Determine the CMD directives] ********************************************
-ok: [localhost] => (item={'image': 'quay.io/centos/centos:7', 'name': 'centos7', 'pre_build_image': True})
-
-TASK [Create molecule instance(s)] *********************************************
-changed: [localhost] => (item=centos7)
-
-TASK [Wait for instance(s) creation to complete] *******************************
-FAILED - RETRYING: Wait for instance(s) creation to complete (300 retries left).
-changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '452206494330.2878', 'results_file': '/root/.ansible_async/452206494330.2878', 'changed': True, 'failed': False, 'item': {'image': 'quay.io/centos/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
-
-PLAY RECAP *********************************************************************
-localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0
-
-INFO     Running toxic > converge
-
-PLAY [Converge] ****************************************************************
-
-TASK [Gathering Facts] *********************************************************
-fatal: [centos7]: FAILED! => {"msg": "docker command not found in PATH"}
-
-PLAY RECAP *********************************************************************
-centos7                    : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0
-
-CRITICAL Ansible return code was 2, command was: ['ansible-playbook', '--inventory', '/root/.cache/molecule/vector-role/toxic/inventory', '--skip-tags', 'molecule-notest,notest', '/opt/vector-role/molecule/toxic/converge.yml']
-WARNING  An error occurred during the test sequence action: 'converge'. Cleaning up.
-INFO     Running toxic > cleanup
-WARNING  Skipping, cleanup playbook not configured.
-INFO     Running toxic > destroy
-
-PLAY [Destroy] *****************************************************************
-
-TASK [Destroy molecule instance(s)] ********************************************
-changed: [localhost] => (item=centos7)
-
-TASK [Wait for instance(s) deletion to complete] *******************************
-FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
-changed: [localhost] => (item=centos7)
-
-TASK [Delete docker networks(s)] ***********************************************
-
-PLAY RECAP *********************************************************************
-localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
-
-INFO     Pruning extra files from scenario ephemeral directory
-ERROR: InvocationError for command /opt/vector-role/.tox/py39-ansible210/bin/molecule test -s toxic --destroy always (exited with code 1)
-py39-ansible30 installed: ansible==3.0.0,ansible-base==2.10.17,ansible-compat==3.0.1,ansible-core==2.14.2,ansible-lint==5.1.3,arrow==1.2.3,attrs==22.2.0,bcrypt==4.0.1,binaryornot==0.4.4,bracex==2.3.post1,Cerberus==1.3.2,certifi==2022.12.7,cffi==1.15.1,chardet==5.1.0,charset-normalizer==3.0.1,click==8.1.3,click-help-colors==0.9.1,cookiecutter==2.1.1,cryptography==39.0.1,distro==1.8.0,docker==6.0.1,enrich==1.2.7,idna==3.4,Jinja2==3.1.2,jinja2-time==0.2.0,jmespath==1.0.1,jsonschema==4.17.3,lxml==4.9.2,markdown-it-py==2.1.0,MarkupSafe==2.1.2,mdurl==0.1.2,molecule==3.4.0,molecule-docker==1.1.0,molecule-podman==1.0.1,packaging==23.0,paramiko==2.12.0,pathspec==0.11.0,pluggy==0.13.1,pycparser==2.21,Pygments==2.14.0,PyNaCl==1.5.0,pyrsistent==0.19.3,python-dateutil==2.8.2,python-slugify==8.0.0,PyYAML==5.4.1,requests==2.28.2,resolvelib==0.8.1,rich==13.3.1,ruamel.yaml==0.17.21,ruamel.yaml.clib==0.2.7,selinux==0.3.0,six==1.16.0,subprocess-tee==0.4.1,tenacity==8.2.1,text-unidecode==1.3,urllib3==1.26.14,wcmatch==8.4.1,websocket-client==1.5.1,yamllint==1.26.3
-py39-ansible30 run-test-pre: PYTHONHASHSEED='2378896231'
-py39-ansible30 run-test: commands[0] | molecule test -s toxic --destroy always
-INFO     toxic scenario test matrix: destroy, create, converge, destroy
-INFO     Performing prerun...
-WARNING  Failed to locate command: [Errno 2] No such file or directory: 'git'
-INFO     Guessed /opt/vector-role as project root directory
-INFO     Using /root/.cache/ansible-lint/b984a4/roles/vector.vector symlink to current repository in order to enable Ansible to find the role using its expected full name.
-INFO     Added ANSIBLE_ROLES_PATH=~/.ansible/roles:/usr/share/ansible/roles:/etc/ansible/roles:/root/.cache/ansible-lint/b984a4/roles
-INFO     Running toxic > destroy
-INFO     Sanity checks: 'docker'
-
-PLAY [Destroy] *****************************************************************
-
-TASK [Destroy molecule instance(s)] ********************************************
-changed: [localhost] => (item=centos7)
-
-TASK [Wait for instance(s) deletion to complete] *******************************
-FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
-ok: [localhost] => (item=centos7)
-
-TASK [Delete docker networks(s)] ***********************************************
-
-PLAY RECAP *********************************************************************
-localhost                  : ok=2    changed=1    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
-
-INFO     Running toxic > create
-
-PLAY [Create] ******************************************************************
-
-TASK [Log into a Docker registry] **********************************************
-skipping: [localhost] => (item=None) 
-skipping: [localhost]
-
-TASK [Check presence of custom Dockerfiles] ************************************
-ok: [localhost] => (item={'image': 'quay.io/centos/centos:7', 'name': 'centos7', 'pre_build_image': True})
-
-TASK [Create Dockerfiles from image names] *************************************
-skipping: [localhost] => (item={'image': 'quay.io/centos/centos:7', 'name': 'centos7', 'pre_build_image': True}) 
-
-TASK [Discover local Docker images] ********************************************
-ok: [localhost] => (item={'changed': False, 'skipped': True, 'skip_reason': 'Conditional result was False', 'item': {'image': 'quay.io/centos/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item', 'i': 0, 'ansible_index_var': 'i'})
-
-TASK [Build an Ansible compatible image (new)] *********************************
-skipping: [localhost] => (item=molecule_local/quay.io/centos/centos:7) 
-
-TASK [Create docker network(s)] ************************************************
-
-TASK [Determine the CMD directives] ********************************************
-ok: [localhost] => (item={'image': 'quay.io/centos/centos:7', 'name': 'centos7', 'pre_build_image': True})
-
-TASK [Create molecule instance(s)] *********************************************
-changed: [localhost] => (item=centos7)
-
-TASK [Wait for instance(s) creation to complete] *******************************
-FAILED - RETRYING: Wait for instance(s) creation to complete (300 retries left).
-changed: [localhost] => (item={'started': 1, 'finished': 0, 'ansible_job_id': '639122438365.3098', 'results_file': '/root/.ansible_async/639122438365.3098', 'changed': True, 'failed': False, 'item': {'image': 'quay.io/centos/centos:7', 'name': 'centos7', 'pre_build_image': True}, 'ansible_loop_var': 'item'})
-
-PLAY RECAP *********************************************************************
-localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0
-
-INFO     Running toxic > converge
-
-PLAY [Converge] ****************************************************************
-
-TASK [Gathering Facts] *********************************************************
-fatal: [centos7]: FAILED! => {"msg": "docker command not found in PATH"}
-
-PLAY RECAP *********************************************************************
-centos7                    : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0
-
-CRITICAL Ansible return code was 2, command was: ['ansible-playbook', '--inventory', '/root/.cache/molecule/vector-role/toxic/inventory', '--skip-tags', 'molecule-notest,notest', '/opt/vector-role/molecule/toxic/converge.yml']
-WARNING  An error occurred during the test sequence action: 'converge'. Cleaning up.
-INFO     Running toxic > cleanup
-WARNING  Skipping, cleanup playbook not configured.
-INFO     Running toxic > destroy
-
-PLAY [Destroy] *****************************************************************
-
-TASK [Destroy molecule instance(s)] ********************************************
-changed: [localhost] => (item=centos7)
-
-TASK [Wait for instance(s) deletion to complete] *******************************
-FAILED - RETRYING: Wait for instance(s) deletion to complete (300 retries left).
-changed: [localhost] => (item=centos7)
-
-TASK [Delete docker networks(s)] ***********************************************
-
-PLAY RECAP *********************************************************************
-localhost                  : ok=2    changed=2    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0
-
-INFO     Pruning extra files from scenario ephemeral directory
-ERROR: InvocationError for command /opt/vector-role/.tox/py39-ansible30/bin/molecule test -s toxic --destroy always (exited with code 1)
-___________________________________________________________________________ summary ___________________________________________________________________________
-ERROR:   py39-ansible210: commands failed
-ERROR:   py39-ansible30: commands failed
-```
-
-</details>
 ---
