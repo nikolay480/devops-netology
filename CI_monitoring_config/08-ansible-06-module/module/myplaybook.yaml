@@ -1,0 +1,8 @@
+---
+- name: Check my module
+  hosts: localhost
+  tasks:
+    - Сreate file:
+      ansible.modules.my_own_module:
+        path: "/tmp/file.txt"
+        content: "test text message"
