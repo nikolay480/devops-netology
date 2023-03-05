@@ -1,0 +1,5 @@
+groupId: netology;
+artifactId: java;
+version: 8_102;
+classifier: distrib;
+type: tar.gz.

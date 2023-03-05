@@ -9,7 +9,7 @@ resource "yandex_compute_instance" "vm-test" {
 
   resources {
     cores  = 2
-    memory = 2
+    memory = 4
   }
 
   boot_disk {
