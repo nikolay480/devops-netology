@@ -1,0 +1,24 @@
+node{
+    stage("Git checkout"){
+        git branch: 'main', credentialsId: '8bf3ba0b-b1e8-4dd6-871b-fa6d554a9b78', url: 'https://github.com/nikolay480/example-playbook.git'
+    }
+    
+    stage("venv"){
+        sh "chmod +x -R ~/python310-env/bin/activate"
+        sh '~/python310-env/bin/activate'
+    }
+    
+    stage("Sample define secret_check"){
+        prod_run = false
+    }
+    
+    stage("Run playbook"){
+        if (prod_run){
+            sh 'ansible-playbook site.yml -i inventory/prod.yml'
+        }
+        else{
+            sh 'ansible-playbook site.yml -i inventory/prod.yml --diff --check'
+        }
+        
+   }
+} 
