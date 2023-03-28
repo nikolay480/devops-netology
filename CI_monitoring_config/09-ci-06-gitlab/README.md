@@ -105,8 +105,6 @@ nik@DESKTOP-LE1IGVR:~$ curl localhost:5290/get_info
 
 [resful-api-repo](restful_api-main)
 
-
-
 - лог успешного выполнения пайплайна:
   
 ![](img/pipelines.png)
@@ -116,10 +114,6 @@ nik@DESKTOP-LE1IGVR:~$ curl localhost:5290/get_info
 ![](img/deploy.png)
 
 Также можем проверить работу сервиса в `pod` k8s-кластера.
-
-
-
-Для этого используем `port-forwarding`
 
 Посмотрим список `pod`  в нашем пространстве имен:
 
