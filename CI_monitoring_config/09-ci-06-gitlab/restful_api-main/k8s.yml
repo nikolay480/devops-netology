@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: restful-api
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest-deployment
+  namespace: restful-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: restful
+  template:
+    metadata:
+      namespace: restful-api
+      labels:
+        app: restful
+    spec:
+      containers:
+        - name: restful-api
+          image: cr.yandex/crpbkuj09ehjedguf3i1/restful_api:__VERSION__
+          imagePullPolicy: Always
