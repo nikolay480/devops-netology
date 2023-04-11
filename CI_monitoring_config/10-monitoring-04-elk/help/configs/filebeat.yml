@@ -10,7 +10,7 @@ processors:
       host: "unix:///var/run/docker.sock"
 
   - decode_json_fields:
-      fields: ["m@timestamp"]
+      fields: ["@timestamp"]
       target: "json"
       overwrite_keys: true
 
