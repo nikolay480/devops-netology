@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+  name: my-ingress
+spec:
+  rules:
+    - host: netology.nik.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: front-app-service
+                port:
+                  name: nginx
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: back-app-service
+                port:
+                  name: multitool

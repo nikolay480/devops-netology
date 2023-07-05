@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app-back
+  template:
+    metadata:
+      labels:
+        app: my-app-back
+    spec:
+      containers:
+      - name: multitool
+        # image: wbitt/network-multitool
+        image: praqma/network-multitool:alpine-extra
+        ports:
+        - containerPort: 80
