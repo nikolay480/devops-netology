@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: log-reader
+spec:
+  selector:
+    matchLabels:
+      app: log-reader
+  template:
+    metadata:
+      labels:
+        app: log-reader
+    spec:
+      containers:
+      - name: multitool
+        image: praqma/network-multitool:alpine-extra
+        ports:
+          - containerPort: 80
+        volumeMounts:
+        - name: syslog-volume
+          mountPath: /var/log/syslog
+          readOnly: true
+      volumes:
+      - name: syslog-volume
+        hostPath:
+          path: /var/log/syslog
