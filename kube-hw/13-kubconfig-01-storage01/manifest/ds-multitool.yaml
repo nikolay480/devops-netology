@@ -6,7 +6,7 @@ spec:
   selector:
     matchLabels:
       app: log-reader
-  template:
+  template: ds
     metadata:
       labels:
         app: log-reader

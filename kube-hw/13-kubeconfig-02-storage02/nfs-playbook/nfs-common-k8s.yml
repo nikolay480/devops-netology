@@ -1,0 +1,11 @@
+- hosts: k8s-yc
+  # connection: local
+  gather_facts: no
+  become: yes
+  tasks:
+  - name: Install a list of packages with a list variable
+    yum:
+      name: "{{ packages }}"
+    vars:
+      packages:
+      - nfs-common

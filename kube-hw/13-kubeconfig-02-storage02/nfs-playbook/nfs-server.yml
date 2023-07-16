@@ -1,0 +1,54 @@
+# ansible-galaxy install geerlingguy.nfs
+---
+- hosts: nfs1
+  # connection: local
+  become: yes
+  vars:
+    nfs_exports: [ "/nfs/data *(rw,no_root_squash)", "/nfs/data/minio *(rw,all_squash)", "/nfs/data/mysql *(rw,all_squash)" ]
+    nfs_rpcbind_state: started
+    nfs_rpcbind_enabled: true
+    nfs_server_daemon: nfs-server
+  tasks:
+    # - name: Ensure NFS utilities are installed.
+    #   package: name=nfs-utils state=present
+    #   when: ansible_os_family == 'RedHat'
+    - name: Ensure NFS utilities are installed.
+      apt:
+        name:
+          - nfs-common
+          - nfs-kernel-server
+        state: present
+
+    - name: Ensure rpcbind is running as configured.
+      service:
+        name: rpcbind
+        state: "{{ nfs_rpcbind_state }}"
+        enabled: "{{ nfs_rpcbind_enabled }}"
+      notify: reload nfs 
+
+    - name: Ensure directories to export exist
+      file:  # noqa 208
+        path: "{{ item.strip().split()[0] }}"
+        state: directory
+        recurse: yes
+        owner: root
+        group: root
+        mode: '0777'
+      with_items: "{{ nfs_exports }}"
+
+    - name: Copy exports file.
+      template:
+        src: ./template/nfs_exports.j2
+        dest: /etc/exports
+        owner: root
+        group: root
+        mode: 0644
+      notify: reload nfs
+
+    - name: Ensure nfs is running.
+      service: "name={{ nfs_server_daemon }} state=started enabled=yes"
+      when: nfs_exports|length
+
+  handlers:
+    - name: reload nfs
+      command: 'exportfs -ra'
