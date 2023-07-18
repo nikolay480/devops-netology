@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-app-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+        - name: busybox-container
+          image: busybox
+          command: ['sh', '-c', 'echo The app is running! && sleep 3600']
+          env:
+            - name: HTTP_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: my-configmap
+                  key: http_port
+          ports:
+            - containerPort: 9090
+        
+        - name: multitool-container
+          image: wbitt/network-multitool
+          env:
+            - name: MULTI_TOOL_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: my-configmap
+                  key: multi_tool_port
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: cm-volume
+              mountPath: /usr/share/nginx/html
+      volumes: 
+        - name: cm-volume
+          configMap:
+            name: my-configmap
+            
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: multitool-svc
+spec:
+  selector:
+    app: my-app
+  ports:
+    - name: busybox
+      protocol: TCP
+      port: 9001
+      targetPort: 9090
+    - name: multitool
+      protocol: TCP
+      port: 9002
+      targetPort: 80
