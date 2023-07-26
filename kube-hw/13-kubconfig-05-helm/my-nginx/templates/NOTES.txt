@@ -1,0 +1,2 @@
+Content of NOTES.txt appears after deploy.
+Deployed version {{ .Values.appVersion | default .Chart.AppVersion }}.
