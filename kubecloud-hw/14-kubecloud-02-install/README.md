@@ -174,7 +174,8 @@ root@cp1:/home/yc-user# systemctl restart haproxy
 
 ![](haproxy_stat.png)
 
-
+В случае перезапуска ноды cp1 по тому же адресу статистика все равно будет доступна:
+![](img/haproxy2.png)
 Если остановить nginx на ноде cp1 
 ```bash
 root@cp1:/home/yc-user# systemctl stop nginx
