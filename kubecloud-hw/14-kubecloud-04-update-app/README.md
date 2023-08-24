@@ -86,7 +86,7 @@ annotations:
     nginx.ingress.kubernetes.io/canary-weight: 30%
 ```
 
-Приментим наши манифесты:
+Применим наши манифесты:
 
 ```bash
 nik@nik-Ubuntu:~/devops-netology/kubecloud-hw/14-kubecloud-04-update-app/manifest$ k apply -f ./canary/
