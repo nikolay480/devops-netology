@@ -1,0 +1,16 @@
+
+
+
+#cloud-config
+users:
+  - name: vm-user
+    groups: sudo
+    shell: /bin/bash
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCjOqxotweTB+3h10/vLXG9eZiC123nkXcQi1cJRkBk1h9npd47JCavWnafUzbt34hE3WYaZXWlQPJbuY0hzUqXzHygxvOtF//mBUoEJgpHCTkPpKbxAFyNgoIHl4jEjhFzleJomrI52IuozJNQHDUI3zBLdpfI8tKwTQ8EdhItPmgxTi1dupprd4eJLPxyyEpkEr3TQIrnAy8DqvzvFQbR+JNZIHI/NktHe5P38L2LVWpzBDVuzWxWFPJwwSjJr8TcfMfXPtvUQcPq4TYLFLO8elo1FQuoFDwtLhlWqaEo9L5iDqM8cu25LQNr6FCUlhaqipatFQDepxdyaJg1sS1hzeTV9b3xMWQY1GkQtuEwpGUs7BeaHdtsa6wU9HGJWa9Xd61R2tDcKOa5NacEPPFn7jtNbaYS5iJfPglYkny1L5sPQ0SJ+V6y9uDa99RctlVgC5777NsyT2scJRYBUpQo/wQAMBYgOZGqBom+Me3qMX+Dq4e4ujJK/wLIcsxTj7c= nik@nik-Ubuntu
+
+
+runcmd:
+  - [ sh, -c, "echo '<img src='https://storage.yandexcloud.net/nik-2023-s3/hawk.jpg'>\n' > /var/www/html/index.html"]
+  - [ sh, -c, "echo $(ip a | grep 'inet 192' | head -n 1 | awk '{print $2}') >> /var/www/html/index.html"]
