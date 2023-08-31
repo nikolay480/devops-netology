@@ -5,10 +5,10 @@ variable "token" {
 } # export YC_TOKEN="YOUR_YC_TOKEN"
 
 variable "cloud_id" {
-} # export YC_CLOUD_ID="YOUR_YC_CLOUD_ID"
+  } # export YC_CLOUD_ID="YOUR_YC_CLOUD_ID"
 
 variable "folder_id" {
-} # export YC_FOLDER_ID="YOUR_YC_FOLDER_ID"
+ } # export YC_FOLDER_ID="YOUR_YC_FOLDER_ID"
 
 variable "vm_user" {
   type    = string
