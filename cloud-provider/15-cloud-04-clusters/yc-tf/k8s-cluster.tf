@@ -42,7 +42,13 @@ resource "yandex_kubernetes_cluster" "k8s-regional" {
     }
   service_account_id      = yandex_iam_service_account.sa-k8s.id
   node_service_account_id = yandex_iam_service_account.sa-k8s.id
-
+  
+  depends_on = [
+   yandex_iam_service_account.sa-k8s,
+   yandex_resourcemanager_folder_iam_member.editor,
+   yandex_resourcemanager_folder_iam_member.images-puller,
+   yandex_resourcemanager_folder_iam_member.k8s_admin 
+  ]
   # labels = {
   #   my_key       = "my_value"
   #   my_other_key = "my_other_value"
